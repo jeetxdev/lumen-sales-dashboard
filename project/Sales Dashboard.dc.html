@@ -1,0 +1,867 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="_ds/nocturne-de566d35-eff6-44e0-97ff-45de42a387e0/styles.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&display=swap">
+<link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/regular/style.css">
+<script src="_ds/nocturne-de566d35-eff6-44e0-97ff-45de42a387e0/_ds_bundle.js"></script>
+<style>body{margin:0;background:var(--color-neutral-900)}a{color:var(--color-accent)}a:hover{color:var(--color-accent-300)}</style>
+</helmet>
+<div style="min-height:100vh;display:flex;justify-content:center;align-items:center;padding:{{ L.outerPad }};background:var(--color-bg);color:var(--color-text);font-family:var(--font-body)">
+<div style="position:relative;display:grid;grid-template-columns:{{ L.cols }};width:{{ L.w }};height:{{ L.h }};border-radius:{{ L.r }};box-shadow:{{ L.shadow }};overflow:hidden;background:radial-gradient(1100px 520px at 15% -10%, var(--color-accent-900), transparent 60%), var(--color-bg)">
+
+  <sc-if value="{{ isDesktop }}" hint-placeholder-val="{{ true }}">
+  <aside style="display:flex;flex-direction:column;gap:2px;padding:var(--space-6) var(--space-4);height:100%;overflow-y:auto;box-shadow:inset -1px 0 0 var(--color-neutral-900)">
+    <div style="display:flex;align-items:center;gap:var(--space-3);padding:0 var(--space-3) var(--space-8)">
+      <div style="width:26px;height:26px;border-radius:var(--radius-md);border:1px solid var(--color-accent);display:grid;place-items:center;color:var(--color-accent);box-shadow:0 0 14px var(--color-accent-800)"><i class="ph ph-moon-stars" style="font-size:15px"></i></div>
+      <div style="display:flex;flex-direction:column;line-height:1.2"><span style="font-weight:500;font-size:15px">Lumen Goods</span><span style="font-size:11px;color:var(--color-neutral-500)">Wholesale</span></div>
+    </div>
+    <sc-for list="{{ nav }}" as="n" hint-placeholder-count="8">
+      <button class="btn" onClick="{{ n.go }}" style="justify-content:flex-start;gap:var(--space-3);width:100%;padding:8px 10px;font-size:14px;color:{{ n.color }};background:{{ n.bg }}"><i class="ph {{ n.icon }}" style="font-size:17px"></i><span style="flex:1;text-align:left">{{ n.label }}</span><span style="font-size:11px;color:var(--color-neutral-400)">{{ n.badge }}</span></button>
+    </sc-for>
+    <div style="margin-top:auto;display:flex;align-items:center;gap:var(--space-3);padding:var(--space-3)">
+      <div style="width:30px;height:30px;border-radius:50%;background:var(--color-accent-800);color:var(--color-accent-100);display:grid;place-items:center;font-size:12px">MR</div>
+      <div style="display:flex;flex-direction:column;line-height:1.3"><span style="font-size:13px">Maya Rivera</span><span style="font-size:11px;color:var(--color-neutral-500)">Sales lead</span></div>
+    </div>
+  </aside>
+  </sc-if>
+
+  <sc-if value="{{ isMobile }}" hint-placeholder-val="{{ false }}">
+    <div style="position:absolute;top:0;left:0;right:0;height:44px;z-index:3;display:flex;align-items:center;padding:0 28px;font-size:14px;font-weight:500;background:var(--color-bg)"><span style="margin-right:auto">9:41</span><div style="display:flex;gap:6px"><i class="ph ph-cell-signal-full"></i><i class="ph ph-wifi-high"></i><i class="ph ph-battery-full"></i></div></div>
+  </sc-if>
+
+  <main ref="{{ mainRef }}" style="overflow-y:auto;min-width:0;height:100%;display:flex;flex-direction:column;gap:{{ L.gap }};padding:{{ L.pad }}">
+    <header style="display:flex;align-items:flex-end;gap:var(--space-4);flex-wrap:wrap">
+      <div style="margin-right:auto;min-width:0;display:flex;flex-direction:column;gap:4px">
+        <sc-if value="{{ showBack }}" hint-placeholder-val="{{ false }}"><button class="btn btn-ghost" onClick="{{ goBack }}" style="align-self:flex-start;font-size:13px;padding:2px 4px;margin-left:-4px"><i class="ph ph-arrow-left"></i>{{ backLabel }}</button></sc-if>
+        <div style="font-size:12px;color:var(--color-neutral-500)">{{ subtitle }}</div>
+        <div style="display:flex;align-items:center;gap:var(--space-3);flex-wrap:wrap"><h2 style="margin:0;font-size:{{ L.h2 }}">{{ title }}</h2><sc-if value="{{ titleTag }}" hint-placeholder-val="{{ false }}"><span class="tag {{ titleTag.cls }}">{{ titleTag.label }}</span></sc-if></div>
+      </div>
+      <sc-if value="{{ showSearch }}" hint-placeholder-val="{{ false }}">
+        <div style="position:relative;width:{{ L.searchW }}"><i class="ph ph-magnifying-glass" style="position:absolute;left:10px;top:10px;color:var(--color-neutral-500)"></i><input class="input" placeholder="{{ searchPh }}" value="{{ query }}" onChange="{{ onQuery }}" style="padding-left:32px"></div>
+      </sc-if>
+      <sc-if value="{{ showRange }}" hint-placeholder-val="{{ true }}">
+        <div class="seg"><sc-for list="{{ ranges }}" as="r" hint-placeholder-count="3"><label class="seg-opt"><input type="radio" name="range" checked="{{ r.on }}" onChange="{{ r.pick }}">{{ r.label }}</label></sc-for></div>
+      </sc-if>
+      <sc-if value="{{ headerAction }}" hint-placeholder-val="{{ true }}">
+        <button class="btn btn-primary" onClick="{{ headerAction.fn }}"><i class="ph {{ headerAction.icon }}"></i>{{ headerAction.label }}</button>
+      </sc-if>
+    </header>
+
+    <!-- OVERVIEW -->
+    <sc-if value="{{ is.overview }}" hint-placeholder-val="{{ true }}">
+      <section data-screen-label="Overview" style="display:grid;grid-template-columns:{{ L.kpiCols }};gap:var(--space-4)">
+        <sc-for list="{{ kpis }}" as="k" hint-placeholder-count="4">
+          <div class="card elev-sm" style="padding:var(--space-6);gap:var(--space-3);min-width:0">
+            <div style="display:flex;align-items:center;gap:var(--space-2);font-size:12px;color:var(--color-neutral-400)"><i class="ph {{ k.icon }}" style="font-size:15px;color:var(--color-accent)"></i>{{ k.label }}</div>
+            <div style="display:flex;align-items:flex-end;gap:var(--space-3)">
+              <div style="font-size:26px;font-weight:500;letter-spacing:-0.02em;line-height:1;margin-right:auto">{{ k.value }}</div>
+              <sc-if value="{{ vis }}" hint-placeholder-val="{{ true }}"><svg viewBox="0 0 100 28" preserveAspectRatio="none" style="width:{{ L.sparkW }};height:28px;overflow:visible"><path d="{{ k.spark }}" fill="none" stroke="var(--color-accent)" stroke-width="1.5" vector-effect="non-scaling-stroke"></path></svg></sc-if>
+            </div>
+            <div style="font-size:12px;color:var(--color-neutral-400)"><span style="color:{{ k.deltaColor }}">{{ k.delta }}</span> {{ k.note }}</div>
+          </div>
+        </sc-for>
+      </section>
+
+      <section style="display:grid;grid-template-columns:{{ L.split }};gap:var(--space-4)">
+        <div class="card elev-sm" style="padding:var(--space-6);gap:var(--space-6);min-width:0">
+          <div style="display:flex;align-items:baseline;gap:var(--space-3);flex-wrap:wrap">
+            <div class="card-title" style="margin-right:auto">Revenue</div>
+            <span style="font-size:12px;color:var(--color-neutral-400)">{{ revTotal }} trailing 12 mo</span>
+            <span class="tag tag-accent">+13.2% YoY</span>
+          </div>
+          <sc-if value="{{ revArea }}" hint-placeholder-val="{{ false }}">
+            <div style="display:flex;flex-direction:column;gap:8px">
+              <svg viewBox="0 0 600 200" preserveAspectRatio="none" style="width:100%;height:200px;overflow:visible">
+                <path d="{{ chart.area }}" fill="var(--color-accent-900)"></path>
+                <path d="{{ chart.ly }}" fill="none" stroke="var(--color-neutral-700)" stroke-width="1.5" stroke-dasharray="4 4" vector-effect="non-scaling-stroke"></path>
+                <path d="{{ chart.line }}" fill="none" stroke="var(--color-accent)" stroke-width="2" vector-effect="non-scaling-stroke" style="filter:drop-shadow(0 0 6px var(--color-accent-700))"></path>
+              </svg>
+              <div style="display:grid;grid-template-columns:repeat(12,1fr)"><sc-for list="{{ months }}" as="m" hint-placeholder-count="12"><div style="font-size:11px;text-align:center;color:var(--color-neutral-500)">{{ m.label }}</div></sc-for></div>
+              <div style="display:flex;gap:var(--space-6);font-size:12px;color:var(--color-neutral-400)"><span style="display:flex;align-items:center;gap:6px"><span style="width:14px;height:2px;background:var(--color-accent)"></span>This year</span><span style="display:flex;align-items:center;gap:6px"><span style="width:14px;height:0;border-top:1.5px dashed var(--color-neutral-600)"></span>Last year</span></div>
+            </div>
+          </sc-if>
+          <sc-if value="{{ revBars }}" hint-placeholder-val="{{ true }}">
+            <div style="display:grid;grid-template-columns:repeat(12,1fr);gap:{{ L.barGap }};align-items:end;height:200px">
+              <sc-for list="{{ months }}" as="m" hint-placeholder-count="12">
+                <div style="display:flex;flex-direction:column;gap:6px;height:100%;justify-content:flex-end">
+                  <div title="{{ m.tip }}" style="height:{{ m.h }};border-radius:var(--radius-sm) var(--radius-sm) 2px 2px;background:{{ m.bg }};box-shadow:{{ m.glow }}"></div>
+                  <div style="font-size:11px;text-align:center;color:var(--color-neutral-500)">{{ m.label }}</div>
+                </div>
+              </sc-for>
+            </div>
+          </sc-if>
+          <sc-if value="{{ revTable }}" hint-placeholder-val="{{ false }}">
+            <div style="overflow-x:auto"><table class="table">
+              <thead><tr><th>Month</th><th style="text-align:right">Orders</th><th style="text-align:right">Revenue</th><th style="text-align:right">Margin</th><th style="text-align:right">vs LY</th></tr></thead>
+              <tbody><sc-for list="{{ recentMonths }}" as="m" hint-placeholder-count="6"><tr><td>{{ m.full }}</td><td style="text-align:right">{{ m.orders }}</td><td style="text-align:right;font-variant-numeric:tabular-nums">{{ m.revFmt }}</td><td style="text-align:right;color:var(--color-neutral-400)">{{ m.margin }}</td><td style="text-align:right;color:var(--color-accent-300)">{{ m.yoy }}</td></tr></sc-for></tbody>
+            </table></div>
+          </sc-if>
+        </div>
+
+        <div class="card elev-sm" style="padding:var(--space-6);gap:var(--space-4);min-width:0">
+          <div style="display:flex;align-items:baseline;gap:var(--space-3)"><div class="card-title" style="margin-right:auto">Receivables</div><span style="font-size:20px;font-weight:500">{{ arTotal }}</span></div>
+          <sc-if value="{{ vis }}" hint-placeholder-val="{{ true }}">
+            <div style="display:flex;height:10px;border-radius:5px;overflow:hidden;gap:2px"><sc-for list="{{ aging }}" as="a" hint-placeholder-count="5"><div style="width:{{ a.pct }};background:{{ a.color }}"></div></sc-for></div>
+          </sc-if>
+          <div style="display:flex;flex-direction:column">
+            <sc-for list="{{ aging }}" as="a" hint-placeholder-count="5">
+              <div style="display:flex;align-items:center;gap:var(--space-3);font-size:13px;padding:7px 0;box-shadow:inset 0 -1px 0 color-mix(in srgb, var(--color-text) 7%, transparent)"><span style="width:8px;height:8px;border-radius:2px;background:{{ a.color }}"></span><span style="flex:1">{{ a.label }}</span><span style="color:var(--color-neutral-500);font-size:12px">{{ a.count }} inv</span><span style="width:70px;text-align:right;font-variant-numeric:tabular-nums">{{ a.amountFmt }}</span></div>
+            </sc-for>
+          </div>
+          <button class="btn btn-ghost" onClick="{{ goInvoices }}" style="align-self:flex-start;margin-top:auto">Review invoices<i class="ph ph-arrow-right"></i></button>
+        </div>
+      </section>
+
+      <section style="display:grid;grid-template-columns:{{ L.split }};gap:var(--space-4)">
+        <div class="card elev-sm" style="padding:var(--space-6);gap:var(--space-4);min-width:0">
+          <div style="display:flex;align-items:center"><div class="card-title" style="margin-right:auto">Recent orders</div><button class="btn btn-ghost" onClick="{{ goOrders }}">All orders<i class="ph ph-arrow-right"></i></button></div>
+          <sc-if value="{{ isDesktop }}" hint-placeholder-val="{{ true }}">
+            <table class="table">
+              <thead><tr><th>Order</th><th>Account</th><th>Ship from</th><th>Status</th><th style="text-align:right">Total</th></tr></thead>
+              <tbody><sc-for list="{{ recentOrders }}" as="o" hint-placeholder-count="5"><tr onClick="{{ o.open }}" style="cursor:pointer"><td style="color:var(--color-neutral-400)">{{ o.id }}</td><td>{{ o.customer }}</td><td style="color:var(--color-neutral-400)">{{ o.wh }}</td><td><span class="tag {{ o.tagClass }}">{{ o.status }}</span></td><td style="text-align:right;font-variant-numeric:tabular-nums">{{ o.totalFmt }}</td></tr></sc-for></tbody>
+            </table>
+          </sc-if>
+          <sc-if value="{{ isMobile }}" hint-placeholder-val="{{ false }}">
+            <div style="display:flex;flex-direction:column"><sc-for list="{{ recentOrders }}" as="o" hint-placeholder-count="5"><div onClick="{{ o.open }}" style="display:flex;align-items:center;gap:var(--space-3);padding:10px 0;cursor:pointer;box-shadow:inset 0 -1px 0 color-mix(in srgb, var(--color-text) 7%, transparent)"><div style="flex:1;min-width:0;display:flex;flex-direction:column"><span style="font-size:14px">{{ o.customer }}</span><span style="font-size:12px;color:var(--color-neutral-500)">{{ o.id }} · {{ o.wh }}</span></div><div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px"><span style="font-variant-numeric:tabular-nums;font-size:14px">{{ o.totalFmt }}</span><span class="tag {{ o.tagClass }}">{{ o.status }}</span></div></div></sc-for></div>
+          </sc-if>
+        </div>
+
+        <sc-if value="{{ breakdownChart }}" hint-placeholder-val="{{ false }}">
+          <div class="card elev-sm" style="padding:var(--space-6);gap:var(--space-4);min-width:0">
+            <div style="display:flex;align-items:center"><div class="card-title" style="margin-right:auto">Stock by warehouse</div><button class="btn btn-ghost" onClick="{{ goInventory }}">Inventory<i class="ph ph-arrow-right"></i></button></div>
+            <sc-for list="{{ warehouses }}" as="w" hint-placeholder-count="3">
+              <div style="display:flex;flex-direction:column;gap:6px">
+                <div style="display:flex;font-size:13px;gap:var(--space-2)"><span style="margin-right:auto">{{ w.name }}</span><span style="color:var(--color-neutral-400)">{{ w.unitsFmt }} units</span></div>
+                <div style="height:6px;border-radius:3px;background:var(--color-neutral-900)"><div style="width:{{ w.capPct }};height:100%;border-radius:3px;background:var(--color-accent)"></div></div>
+                <div style="font-size:11px;color:var(--color-neutral-500)">{{ w.capPct }} of capacity · {{ w.low }} SKUs low</div>
+              </div>
+            </sc-for>
+          </div>
+        </sc-if>
+        <sc-if value="{{ breakdownTable }}" hint-placeholder-val="{{ true }}">
+          <div class="card elev-sm" style="padding:var(--space-6);gap:var(--space-3);min-width:0">
+            <div style="display:flex;align-items:center"><div class="card-title" style="margin-right:auto">Low stock</div><span class="tag tag-outline">{{ lowCount }} SKUs</span></div>
+            <sc-for list="{{ lowStock }}" as="p" hint-placeholder-count="4">
+              <div style="display:flex;flex-direction:column;gap:5px;padding:6px 0">
+                <div style="display:flex;font-size:13px;gap:var(--space-2)"><span style="flex:1;min-width:0">{{ p.name }}</span><span style="color:var(--color-neutral-400);font-variant-numeric:tabular-nums">{{ p.total }} / {{ p.par }}</span></div>
+                <sc-if value="{{ vis }}" hint-placeholder-val="{{ true }}"><div style="height:4px;border-radius:2px;background:var(--color-neutral-900)"><div style="width:{{ p.pct }};height:100%;border-radius:2px;background:var(--color-accent-500)"></div></div></sc-if>
+                <div style="font-size:11px;color:var(--color-neutral-500)">{{ p.split }}</div>
+              </div>
+            </sc-for>
+            <button class="btn btn-primary" onClick="{{ goInventory }}" style="align-self:flex-start;margin-top:auto">Review reorders</button>
+          </div>
+        </sc-if>
+      </section>
+    </sc-if>
+
+    <!-- ORDERS -->
+    <sc-if value="{{ is.orders }}" hint-placeholder-val="{{ false }}">
+      <section data-screen-label="Orders" style="display:flex;gap:var(--space-4);flex-wrap:wrap;align-items:center">
+        <div class="seg" style="max-width:100%;overflow-x:auto"><sc-for list="{{ orderFilters }}" as="f" hint-placeholder-count="5"><label class="seg-opt" style="white-space:nowrap"><input type="radio" name="of" checked="{{ f.on }}" onChange="{{ f.pick }}">{{ f.label }}<span style="font-size:11px;color:var(--color-neutral-500)">{{ f.count }}</span></label></sc-for></div>
+        <span style="margin-left:auto;font-size:12px;color:var(--color-neutral-400)">{{ ordersShown }}</span>
+      </section>
+      <sc-if value="{{ isDesktop }}" hint-placeholder-val="{{ true }}">
+        <section class="card elev-sm" style="padding:var(--space-4) var(--space-6)">
+          <table class="table">
+            <thead><tr><th>Order</th><th>PO #</th><th>Placed</th><th>Account</th><th>Ship from</th><th style="text-align:right">Units</th><th>Status</th><th style="text-align:right">Total</th></tr></thead>
+            <tbody><sc-for list="{{ orders }}" as="o" hint-placeholder-count="10"><tr onClick="{{ o.open }}" style="cursor:pointer"><td style="color:var(--color-neutral-400)">{{ o.id }}</td><td style="color:var(--color-neutral-400);font-size:13px">{{ o.po }}</td><td style="color:var(--color-neutral-400)">{{ o.date }}</td><td>{{ o.customer }}</td><td style="color:var(--color-neutral-400)">{{ o.wh }}</td><td style="text-align:right">{{ o.units }}</td><td><span class="tag {{ o.tagClass }}">{{ o.status }}</span></td><td style="text-align:right;font-variant-numeric:tabular-nums">{{ o.totalFmt }}</td></tr></sc-for></tbody>
+          </table>
+        </section>
+      </sc-if>
+      <sc-if value="{{ isMobile }}" hint-placeholder-val="{{ false }}">
+        <section style="display:flex;flex-direction:column;gap:var(--space-3)"><sc-for list="{{ orders }}" as="o" hint-placeholder-count="6">
+          <div onClick="{{ o.open }}" style="display:flex;flex-direction:column;gap:4px;padding:var(--space-4);border-radius:var(--radius-md);background:var(--color-surface);box-shadow:var(--shadow-sm);cursor:pointer">
+            <div style="display:flex;align-items:center;gap:var(--space-2)"><span style="font-size:12px;color:var(--color-neutral-400)">{{ o.id }} · {{ o.po }}</span><span class="tag {{ o.tagClass }}" style="margin-left:auto">{{ o.status }}</span></div>
+            <div style="display:flex;align-items:baseline;gap:var(--space-2)"><span style="flex:1;font-size:15px">{{ o.customer }}</span><span style="font-variant-numeric:tabular-nums">{{ o.totalFmt }}</span></div>
+            <div style="font-size:12px;color:var(--color-neutral-500)">{{ o.date }} · {{ o.wh }} · {{ o.units }} units</div>
+          </div>
+        </sc-for></section>
+      </sc-if>
+    </sc-if>
+
+    <!-- ORDER DETAIL -->
+    <sc-if value="{{ is.order }}" hint-placeholder-val="{{ false }}">
+      <section data-screen-label="Order detail" class="card elev-sm" style="padding:var(--space-6);gap:var(--space-4)">
+        <div style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:var(--space-2)">
+          <sc-for list="{{ order.steps }}" as="st" hint-placeholder-count="4">
+            <div style="display:flex;flex-direction:column;gap:6px;min-width:0">
+              <div style="height:3px;border-radius:2px;background:{{ st.bar }};box-shadow:{{ st.glow }}"></div>
+              <span style="font-size:13px;color:{{ st.color }}">{{ st.label }}</span>
+              <span style="font-size:11px;color:var(--color-neutral-500)">{{ st.date }}</span>
+            </div>
+          </sc-for>
+        </div>
+      </section>
+      <section style="display:grid;grid-template-columns:{{ L.split }};gap:var(--space-4)">
+        <div class="card elev-sm" style="padding:var(--space-6);gap:var(--space-4);min-width:0">
+          <div class="card-title">Line items</div>
+          <div style="overflow-x:auto"><table class="table" style="min-width:480px">
+            <thead><tr><th>Product</th><th>From</th><th style="text-align:right">Qty</th><th style="text-align:right">Unit</th><th style="text-align:right">Total</th></tr></thead>
+            <tbody><sc-for list="{{ order.lines }}" as="l" hint-placeholder-count="3"><tr><td><div style="display:flex;flex-direction:column;line-height:1.35"><span>{{ l.name }}</span><span style="font-size:12px;color:var(--color-neutral-500)">{{ l.sku }} · case of {{ l.pack }}</span></div></td><td style="color:var(--color-neutral-400)">{{ l.wh }}</td><td style="text-align:right">{{ l.qty }}</td><td style="text-align:right;color:var(--color-neutral-400)">{{ l.unitFmt }}</td><td style="text-align:right;font-variant-numeric:tabular-nums">{{ l.totalFmt }}</td></tr></sc-for></tbody>
+          </table></div>
+          <div style="display:flex;flex-direction:column;gap:6px;margin-left:auto;width:min(100%,260px);font-size:13px">
+            <sc-for list="{{ order.summary }}" as="r" hint-placeholder-count="4"><div style="display:flex;color:var(--color-neutral-400)"><span style="flex:1">{{ r.k }}</span><span style="font-variant-numeric:tabular-nums">{{ r.v }}</span></div></sc-for>
+            <div style="display:flex;font-size:16px;padding-top:8px;box-shadow:inset 0 1px 0 var(--color-neutral-800)"><span style="flex:1">Total</span><span style="font-variant-numeric:tabular-nums">{{ order.totalFmt }}</span></div>
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:var(--space-4);min-width:0">
+          <div class="card elev-sm" style="padding:var(--space-6);gap:var(--space-3)">
+            <div class="card-kicker">Account</div>
+            <button class="btn btn-ghost" onClick="{{ order.openCustomer }}" style="align-self:flex-start;font-size:17px;padding:0;color:var(--color-text)">{{ order.customer }}<i class="ph ph-arrow-up-right" style="color:var(--color-accent)"></i></button>
+            <div style="display:flex;gap:var(--space-2);flex-wrap:wrap"><span class="tag tag-accent">{{ order.tier }}</span><span class="tag tag-neutral">{{ order.terms }}</span></div>
+            <div style="font-size:13px;color:var(--color-neutral-400)">{{ order.address }}</div>
+          </div>
+          <div class="card elev-sm" style="padding:var(--space-6);gap:var(--space-3)">
+            <div class="card-kicker">Invoice</div>
+            <sc-for list="{{ order.invoiceFacts }}" as="f" hint-placeholder-count="3"><div style="display:flex;font-size:13px"><span style="flex:1;color:var(--color-neutral-400)">{{ f.k }}</span><span>{{ f.v }}</span></div></sc-for>
+          </div>
+          <div class="card elev-sm" style="padding:var(--space-6);gap:var(--space-3)">
+            <div class="card-kicker">Fulfilment</div>
+            <sc-for list="{{ order.shipFacts }}" as="f" hint-placeholder-count="3"><div style="display:flex;font-size:13px"><span style="flex:1;color:var(--color-neutral-400)">{{ f.k }}</span><span>{{ f.v }}</span></div></sc-for>
+          </div>
+        </div>
+      </section>
+    </sc-if>
+
+    <!-- CUSTOMERS -->
+    <sc-if value="{{ is.customers }}" hint-placeholder-val="{{ false }}">
+      <section data-screen-label="Customers" style="display:grid;grid-template-columns:{{ L.kpiCols }};gap:var(--space-4)">
+        <sc-for list="{{ custStats }}" as="k" hint-placeholder-count="4"><div class="card elev-sm" style="padding:var(--space-6);gap:var(--space-2);min-width:0"><div style="font-size:12px;color:var(--color-neutral-400)">{{ k.label }}</div><div style="font-size:22px;font-weight:500">{{ k.value }}</div></div></sc-for>
+      </section>
+      <sc-if value="{{ isDesktop }}" hint-placeholder-val="{{ true }}">
+        <section class="card elev-sm" style="padding:var(--space-4) var(--space-6)">
+          <table class="table">
+            <thead><tr><th>Account</th><th>Tier</th><th>Terms</th><th>Rep</th><th style="width:20%">Credit used</th><th style="text-align:right">YTD revenue</th><th>Status</th></tr></thead>
+            <tbody><sc-for list="{{ customers }}" as="c" hint-placeholder-count="10">
+              <tr onClick="{{ c.open }}" style="cursor:pointer">
+                <td><div style="display:flex;align-items:center;gap:var(--space-3)"><div style="width:28px;height:28px;flex:none;border-radius:50%;background:var(--color-neutral-800);display:grid;place-items:center;font-size:11px">{{ c.initials }}</div><div style="display:flex;flex-direction:column;line-height:1.3"><span>{{ c.name }}</span><span style="font-size:12px;color:var(--color-neutral-500)">{{ c.contact }} · {{ c.city }}</span></div></div></td>
+                <td><span class="tag {{ c.tierTag }}">{{ c.tier }}</span></td>
+                <td style="color:var(--color-neutral-400)">{{ c.terms }}</td>
+                <td style="color:var(--color-neutral-400)">{{ c.rep }}</td>
+                <td><sc-if value="{{ vis }}" hint-placeholder-val="{{ true }}"><div style="display:flex;flex-direction:column;gap:4px"><div style="height:5px;border-radius:3px;background:var(--color-neutral-900)"><div style="width:{{ c.creditBar }};height:100%;border-radius:3px;background:{{ c.creditColor }}"></div></div><span style="font-size:11px;color:var(--color-neutral-500)">{{ c.balanceFmt }} of {{ c.limitFmt }}</span></div></sc-if><sc-if value="{{ numOnly }}" hint-placeholder-val="{{ false }}"><span style="font-variant-numeric:tabular-nums">{{ c.balanceFmt }} <span style="color:var(--color-neutral-500)">/ {{ c.limitFmt }} · {{ c.creditPct }}</span></span></sc-if></td>
+                <td style="text-align:right;font-variant-numeric:tabular-nums">{{ c.ytdFmt }}</td>
+                <td><span class="tag {{ c.statusTag }}">{{ c.status }}</span></td>
+              </tr>
+            </sc-for></tbody>
+          </table>
+        </section>
+      </sc-if>
+      <sc-if value="{{ isMobile }}" hint-placeholder-val="{{ false }}">
+        <section style="display:flex;flex-direction:column;gap:var(--space-3)"><sc-for list="{{ customers }}" as="c" hint-placeholder-count="6">
+          <div onClick="{{ c.open }}" style="display:flex;flex-direction:column;gap:8px;padding:var(--space-4);border-radius:var(--radius-md);background:var(--color-surface);box-shadow:var(--shadow-sm);cursor:pointer">
+            <div style="display:flex;align-items:center;gap:var(--space-3)"><div style="width:32px;height:32px;flex:none;border-radius:50%;background:var(--color-neutral-800);display:grid;place-items:center;font-size:12px">{{ c.initials }}</div><div style="flex:1;min-width:0;display:flex;flex-direction:column;line-height:1.3"><span>{{ c.name }}</span><span style="font-size:12px;color:var(--color-neutral-500)">{{ c.city }} · {{ c.terms }}</span></div><span class="tag {{ c.statusTag }}">{{ c.status }}</span></div>
+            <div style="height:5px;border-radius:3px;background:var(--color-neutral-900)"><div style="width:{{ c.creditBar }};height:100%;border-radius:3px;background:{{ c.creditColor }}"></div></div>
+            <div style="display:flex;font-size:12px;color:var(--color-neutral-400)"><span style="flex:1">{{ c.balanceFmt }} of {{ c.limitFmt }} credit</span><span>{{ c.ytdFmt }} YTD</span></div>
+          </div>
+        </sc-for></section>
+      </sc-if>
+    </sc-if>
+
+    <!-- CUSTOMER DETAIL -->
+    <sc-if value="{{ is.customer }}" hint-placeholder-val="{{ false }}">
+      <section data-screen-label="Customer detail" style="display:grid;grid-template-columns:{{ L.kpiCols }};gap:var(--space-4)">
+        <sc-for list="{{ cust.facts }}" as="f" hint-placeholder-count="4"><div class="card elev-sm" style="padding:var(--space-6);gap:var(--space-2);min-width:0"><div style="font-size:12px;color:var(--color-neutral-400)">{{ f.k }}</div><div style="font-size:22px;font-weight:500">{{ f.v }}</div></div></sc-for>
+      </section>
+      <section style="display:grid;grid-template-columns:{{ L.split }};gap:var(--space-4)">
+        <div class="card elev-sm" style="padding:var(--space-6);gap:var(--space-4);min-width:0">
+          <div style="display:flex;align-items:baseline;gap:var(--space-3)"><div class="card-title" style="margin-right:auto">Credit</div><span style="font-size:13px;color:var(--color-neutral-400)">{{ cust.creditPct }} used</span></div>
+          <div style="height:10px;border-radius:5px;background:var(--color-neutral-900)"><div style="width:{{ cust.creditBar }};height:100%;border-radius:5px;background:{{ cust.creditColor }};box-shadow:0 0 12px var(--color-accent-800)"></div></div>
+          <div style="font-size:13px;color:var(--color-neutral-300)">{{ cust.creditNote }}</div>
+          <div class="card-title" style="font-size:15px;margin-top:var(--space-4)">Invoices</div>
+          <div style="overflow-x:auto"><table class="table" style="min-width:460px">
+            <thead><tr><th>Invoice</th><th>Due</th><th>Status</th><th style="text-align:right">Amount</th></tr></thead>
+            <tbody><sc-for list="{{ cust.invoices }}" as="i" hint-placeholder-count="3"><tr><td style="color:var(--color-neutral-400)">{{ i.id }}</td><td style="color:var(--color-neutral-400)">{{ i.due }}</td><td><span class="tag {{ i.tagClass }}">{{ i.statusLabel }}</span></td><td style="text-align:right;font-variant-numeric:tabular-nums">{{ i.amountFmt }}</td></tr></sc-for></tbody>
+          </table></div>
+          <div class="card-title" style="font-size:15px;margin-top:var(--space-4)">Orders</div>
+          <div style="overflow-x:auto"><table class="table" style="min-width:460px">
+            <thead><tr><th>Order</th><th>Placed</th><th>Status</th><th style="text-align:right">Total</th></tr></thead>
+            <tbody><sc-for list="{{ cust.orders }}" as="o" hint-placeholder-count="3"><tr onClick="{{ o.open }}" style="cursor:pointer"><td style="color:var(--color-neutral-400)">{{ o.id }}</td><td style="color:var(--color-neutral-400)">{{ o.date }}</td><td><span class="tag {{ o.tagClass }}">{{ o.status }}</span></td><td style="text-align:right;font-variant-numeric:tabular-nums">{{ o.totalFmt }}</td></tr></sc-for></tbody>
+          </table></div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:var(--space-4);min-width:0">
+          <div class="card elev-sm" style="padding:var(--space-6);gap:var(--space-3)">
+            <div class="card-kicker">Account</div>
+            <sc-for list="{{ cust.info }}" as="f" hint-placeholder-count="5"><div style="display:flex;flex-direction:column;gap:1px"><span style="font-size:11px;color:var(--color-neutral-500)">{{ f.k }}</span><span style="font-size:14px">{{ f.v }}</span></div></sc-for>
+          </div>
+          <div class="card elev-sm" style="padding:var(--space-6);gap:var(--space-3)">
+            <div class="card-kicker">Buys most</div>
+            <sc-for list="{{ cust.top }}" as="p" hint-placeholder-count="3"><div style="display:flex;font-size:13px;gap:var(--space-2)"><span style="flex:1">{{ p.name }}</span><span style="color:var(--color-neutral-400)">{{ p.units }} units</span></div></sc-for>
+          </div>
+        </div>
+      </section>
+    </sc-if>
+
+    <!-- PRODUCTS -->
+    <sc-if value="{{ is.products }}" hint-placeholder-val="{{ false }}">
+      <section data-screen-label="Products" style="display:flex;gap:var(--space-4);flex-wrap:wrap;align-items:center">
+        <div class="seg" style="max-width:100%;overflow-x:auto"><sc-for list="{{ catFilters }}" as="f" hint-placeholder-count="5"><label class="seg-opt" style="white-space:nowrap"><input type="radio" name="cf" checked="{{ f.on }}" onChange="{{ f.pick }}">{{ f.label }}</label></sc-for></div>
+        <span style="margin-left:auto;font-size:12px;color:var(--color-neutral-400)">{{ productsShown }}</span>
+      </section>
+      <section class="card elev-sm" style="padding:var(--space-4) var(--space-6)">
+        <div style="overflow-x:auto"><table class="table" style="min-width:720px">
+          <thead><tr><th>Product</th><th>Category</th><th style="text-align:right">Cost</th><th style="text-align:right">Wholesale</th><th style="text-align:right">MSRP</th><th style="width:16%">Margin</th><th style="text-align:right">MOQ</th><th style="text-align:right">Available</th></tr></thead>
+          <tbody><sc-for list="{{ productRows }}" as="p" hint-placeholder-count="10"><tr>
+            <td><div style="display:flex;flex-direction:column;line-height:1.35"><span>{{ p.name }}</span><span style="font-size:12px;color:var(--color-neutral-500)">{{ p.sku }} · case of {{ p.casePack }}</span></div></td>
+            <td style="color:var(--color-neutral-400)">{{ p.cat }}</td>
+            <td style="text-align:right;color:var(--color-neutral-400)">{{ p.costFmt }}</td>
+            <td style="text-align:right">{{ p.wsFmt }}</td>
+            <td style="text-align:right;color:var(--color-neutral-400)">{{ p.msrpFmt }}</td>
+            <td><div style="display:flex;align-items:center;gap:var(--space-3)"><sc-if value="{{ vis }}" hint-placeholder-val="{{ true }}"><div style="flex:1;height:5px;border-radius:3px;background:var(--color-neutral-900)"><div style="width:{{ p.margin }};height:100%;border-radius:3px;background:var(--color-accent-500)"></div></div></sc-if><span style="font-size:13px;width:36px;text-align:right">{{ p.margin }}</span></div></td>
+            <td style="text-align:right">{{ p.moq }}</td>
+            <td style="text-align:right;font-variant-numeric:tabular-nums">{{ p.avail }}</td>
+          </tr></sc-for></tbody>
+        </table></div>
+      </section>
+    </sc-if>
+
+    <!-- INVENTORY -->
+    <sc-if value="{{ is.inventory }}" hint-placeholder-val="{{ false }}">
+      <section data-screen-label="Inventory" style="display:grid;grid-template-columns:{{ L.whCols }};gap:var(--space-4)">
+        <sc-for list="{{ warehouses }}" as="w" hint-placeholder-count="3">
+          <button onClick="{{ w.pick }}" class="card" style="padding:var(--space-6);gap:var(--space-3);text-align:left;font:inherit;color:inherit;border:0;cursor:pointer;min-width:0;box-shadow:{{ w.ring }}">
+            <div style="display:flex;align-items:center;gap:var(--space-2)"><span class="tag tag-neutral">{{ w.code }}</span><span style="font-size:14px;margin-right:auto">{{ w.name }}</span><span style="font-size:12px;color:var(--color-neutral-500)">{{ w.city }}</span></div>
+            <div style="display:flex;align-items:baseline;gap:var(--space-3)"><span style="font-size:22px;font-weight:500">{{ w.unitsFmt }}</span><span style="font-size:12px;color:var(--color-neutral-400)">units · {{ w.valueFmt }}</span></div>
+            <sc-if value="{{ vis }}" hint-placeholder-val="{{ true }}"><div style="height:6px;border-radius:3px;background:var(--color-neutral-900)"><div style="width:{{ w.capPct }};height:100%;border-radius:3px;background:var(--color-accent)"></div></div></sc-if>
+            <div style="font-size:12px;color:var(--color-neutral-400)">{{ w.capPct }} capacity · {{ w.low }} SKUs low</div>
+          </button>
+        </sc-for>
+      </section>
+      <section style="display:flex;gap:var(--space-4);flex-wrap:wrap;align-items:center">
+        <div class="seg"><sc-for list="{{ invFilters }}" as="f" hint-placeholder-count="3"><label class="seg-opt" style="white-space:nowrap"><input type="radio" name="if" checked="{{ f.on }}" onChange="{{ f.pick }}">{{ f.label }}<span style="font-size:11px;color:var(--color-neutral-500)">{{ f.count }}</span></label></sc-for></div>
+        <span style="margin-left:auto;font-size:12px;color:var(--color-neutral-400)">{{ invScope }}</span>
+      </section>
+      <sc-if value="{{ hasInbound }}" hint-placeholder-val="{{ true }}">
+        <section class="card elev-sm" style="padding:var(--space-6);gap:var(--space-2)">
+          <div style="display:flex;align-items:center;gap:var(--space-3)"><div class="card-title" style="margin-right:auto">Inbound</div><span style="font-size:12px;color:var(--color-neutral-400)">{{ inboundSummary }}</span></div>
+          <sc-for list="{{ inbound }}" as="b" hint-placeholder-count="2">
+            <div style="display:flex;align-items:center;gap:var(--space-3);flex-wrap:wrap;padding:8px 0;box-shadow:inset 0 -1px 0 color-mix(in srgb, var(--color-text) 7%, transparent)">
+              <span class="tag {{ b.tag }}" style="width:72px;justify-content:center">{{ b.type }}</span>
+              <div style="flex:1;min-width:150px;display:flex;flex-direction:column;line-height:1.3"><span style="font-size:14px">{{ b.name }}</span><span style="font-size:12px;color:var(--color-neutral-500)">{{ b.ref }} · {{ b.source }}</span></div>
+              <span style="font-size:13px;font-variant-numeric:tabular-nums">+{{ b.qty }} → {{ b.wh }}</span>
+              <span style="font-size:12px;color:var(--color-neutral-400);min-width:76px;text-align:right">ETA {{ b.eta }}</span>
+              <button class="btn btn-ghost" onClick="{{ b.receive }}" style="font-size:12px"><i class="ph ph-package"></i>Receive</button>
+            </div>
+          </sc-for>
+        </section>
+      </sc-if>
+      <sc-if value="{{ isDesktop }}" hint-placeholder-val="{{ true }}">
+        <section class="card elev-sm" style="padding:var(--space-4) var(--space-6)">
+          <table class="table">
+            <thead><tr><th>Product</th><sc-for list="{{ whHeads }}" as="h" hint-placeholder-count="3"><th style="text-align:right;color:{{ h.color }}">{{ h.code }}</th></sc-for><th style="text-align:right">Allocated</th><th style="width:18%">On hand / reorder pt</th><th>Incoming</th><th>Status</th><th></th></tr></thead>
+            <tbody><sc-for list="{{ invRows }}" as="p" hint-placeholder-count="10"><tr>
+              <td><div style="display:flex;flex-direction:column;line-height:1.35"><span>{{ p.name }}</span><span style="font-size:12px;color:var(--color-neutral-500)">{{ p.sku }}</span></div></td>
+              <sc-for list="{{ p.cells }}" as="c" hint-placeholder-count="3"><td style="text-align:right;font-variant-numeric:tabular-nums;color:{{ c.color }}">{{ c.v }}</td></sc-for>
+              <td style="text-align:right;color:var(--color-neutral-400)">{{ p.allocated }}</td>
+              <td><div style="display:flex;align-items:center;gap:var(--space-3)"><sc-if value="{{ vis }}" hint-placeholder-val="{{ true }}"><div style="flex:1;height:5px;border-radius:3px;background:var(--color-neutral-900)"><div style="width:{{ p.pct }};height:100%;border-radius:3px;background:{{ p.barColor }}"></div></div></sc-if><span style="font-size:12px;text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap">{{ p.total }} / {{ p.par }}</span></div></td>
+              <td style="font-size:12px;white-space:nowrap;color:{{ p.inColor }}">{{ p.incomingText }}</td>
+              <td><span class="tag {{ p.tagClass }}">{{ p.status }}</span></td>
+              <td style="text-align:right"><sc-if value="{{ p.canReorder }}" hint-placeholder-val="{{ false }}"><button class="btn {{ p.btnClass }}" onClick="{{ p.reorder }}" style="font-size:12px;padding:4px 10px;white-space:nowrap">{{ p.btnLabel }}</button></sc-if></td>
+            </tr></sc-for></tbody>
+          </table>
+        </section>
+      </sc-if>
+      <sc-if value="{{ isMobile }}" hint-placeholder-val="{{ false }}">
+        <section style="display:flex;flex-direction:column;gap:var(--space-3)"><sc-for list="{{ invRows }}" as="p" hint-placeholder-count="6">
+          <div style="display:flex;flex-direction:column;gap:8px;padding:var(--space-4);border-radius:var(--radius-md);background:var(--color-surface);box-shadow:var(--shadow-sm)">
+            <div style="display:flex;align-items:center;gap:var(--space-2)"><div style="flex:1;min-width:0;display:flex;flex-direction:column;line-height:1.3"><span>{{ p.name }}</span><span style="font-size:12px;color:var(--color-neutral-500)">{{ p.sku }}</span></div><span class="tag {{ p.tagClass }}">{{ p.status }}</span></div>
+            <div style="height:5px;border-radius:3px;background:var(--color-neutral-900)"><div style="width:{{ p.pct }};height:100%;border-radius:3px;background:{{ p.barColor }}"></div></div>
+            <div style="display:flex;align-items:center;gap:var(--space-3);font-size:12px;color:var(--color-neutral-400)"><span style="flex:1;display:flex;flex-direction:column"><span>{{ p.split }}</span><span style="color:var(--color-accent-300)">{{ p.incomingShort }}</span></span><sc-if value="{{ p.canReorder }}" hint-placeholder-val="{{ false }}"><button class="btn {{ p.btnClass }}" onClick="{{ p.reorder }}" style="font-size:12px;padding:4px 10px">{{ p.btnLabel }}</button></sc-if></div>
+          </div>
+        </sc-for></section>
+      </sc-if>
+    </sc-if>
+
+    <!-- INVOICES -->
+    <sc-if value="{{ is.invoices }}" hint-placeholder-val="{{ false }}">
+      <section data-screen-label="Invoices" class="card elev-sm" style="padding:var(--space-6);gap:var(--space-4)">
+        <div style="display:flex;align-items:baseline;gap:var(--space-3);flex-wrap:wrap"><div class="card-title" style="margin-right:auto">Aging</div><span style="font-size:13px;color:var(--color-neutral-400)">{{ arTotal }} outstanding · {{ overdueFmt }} overdue</span></div>
+        <sc-if value="{{ vis }}" hint-placeholder-val="{{ true }}"><div style="display:flex;height:10px;border-radius:5px;overflow:hidden;gap:2px"><sc-for list="{{ aging }}" as="a" hint-placeholder-count="5"><div style="width:{{ a.pct }};background:{{ a.color }}"></div></sc-for></div></sc-if>
+        <div style="display:grid;grid-template-columns:{{ L.agingCols }};gap:var(--space-3)">
+          <sc-for list="{{ aging }}" as="a" hint-placeholder-count="5"><div style="display:flex;flex-direction:column;gap:2px;padding:var(--space-3);border-radius:var(--radius-md);background:var(--color-bg)"><span style="display:flex;align-items:center;gap:6px;font-size:11px;color:var(--color-neutral-400)"><span style="width:8px;height:8px;border-radius:2px;background:{{ a.color }}"></span>{{ a.label }}</span><span style="font-size:17px;font-variant-numeric:tabular-nums">{{ a.amountFmt }}</span><span style="font-size:11px;color:var(--color-neutral-500)">{{ a.count }} invoices</span></div></sc-for>
+        </div>
+      </section>
+      <section style="display:flex;gap:var(--space-4);flex-wrap:wrap;align-items:center">
+        <div class="seg"><sc-for list="{{ invStatusFilters }}" as="f" hint-placeholder-count="4"><label class="seg-opt"><input type="radio" name="isf" checked="{{ f.on }}" onChange="{{ f.pick }}">{{ f.label }}<span style="font-size:11px;color:var(--color-neutral-500)">{{ f.count }}</span></label></sc-for></div>
+      </section>
+      <section class="card elev-sm" style="padding:var(--space-4) var(--space-6)">
+        <div style="overflow-x:auto"><table class="table" style="min-width:680px">
+          <thead><tr><th>Invoice</th><th>Account</th><th>Issued</th><th>Due</th><th>Terms</th><th>Status</th><th style="text-align:right">Amount</th><th></th></tr></thead>
+          <tbody><sc-for list="{{ invoices }}" as="i" hint-placeholder-count="10"><tr>
+            <td style="color:var(--color-neutral-400)">{{ i.id }}</td>
+            <td><button class="btn btn-ghost" onClick="{{ i.openCustomer }}" style="padding:0;color:var(--color-text);font-weight:400;font-family:var(--font-body)">{{ i.customer }}</button></td>
+            <td style="color:var(--color-neutral-400)">{{ i.issued }}</td>
+            <td style="color:var(--color-neutral-400)">{{ i.due }}</td>
+            <td style="color:var(--color-neutral-400)">{{ i.terms }}</td>
+            <td><span class="tag {{ i.tagClass }}">{{ i.statusLabel }}</span></td>
+            <td style="text-align:right;font-variant-numeric:tabular-nums">{{ i.amountFmt }}</td>
+            <td style="text-align:right"><sc-if value="{{ i.canRemind }}" hint-placeholder-val="{{ false }}"><button class="btn {{ i.btnClass }}" onClick="{{ i.remind }}" style="font-size:12px;padding:4px 10px;white-space:nowrap">{{ i.btnLabel }}</button></sc-if></td>
+          </tr></sc-for></tbody>
+        </table></div>
+      </section>
+    </sc-if>
+
+    <!-- REPORTS -->
+    <sc-if value="{{ is.reports }}" hint-placeholder-val="{{ false }}">
+      <section data-screen-label="Reports" class="card elev-sm" style="padding:var(--space-6);gap:var(--space-6)">
+        <div style="display:flex;align-items:baseline;gap:var(--space-3);flex-wrap:wrap"><div class="card-title" style="margin-right:auto">Revenue vs last year</div><span style="font-size:12px;color:var(--color-neutral-400)">{{ revTotal }} · 43.1% avg margin</span></div>
+        <sc-if value="{{ vis }}" hint-placeholder-val="{{ true }}">
+          <div style="display:flex;flex-direction:column;gap:8px">
+            <svg viewBox="0 0 600 200" preserveAspectRatio="none" style="width:100%;height:220px;overflow:visible">
+              <path d="{{ chart.area }}" fill="var(--color-accent-900)"></path>
+              <path d="{{ chart.ly }}" fill="none" stroke="var(--color-neutral-700)" stroke-width="1.5" stroke-dasharray="4 4" vector-effect="non-scaling-stroke"></path>
+              <path d="{{ chart.line }}" fill="none" stroke="var(--color-accent)" stroke-width="2" vector-effect="non-scaling-stroke" style="filter:drop-shadow(0 0 6px var(--color-accent-700))"></path>
+            </svg>
+            <div style="display:grid;grid-template-columns:repeat(12,1fr)"><sc-for list="{{ months }}" as="m" hint-placeholder-count="12"><div style="font-size:11px;text-align:center;color:var(--color-neutral-500)">{{ m.label }}</div></sc-for></div>
+          </div>
+        </sc-if>
+        <sc-if value="{{ revTable }}" hint-placeholder-val="{{ false }}">
+          <div style="overflow-x:auto"><table class="table" style="min-width:520px">
+            <thead><tr><th>Month</th><th style="text-align:right">Orders</th><th style="text-align:right">Revenue</th><th style="text-align:right">Last year</th><th style="text-align:right">Margin</th><th style="text-align:right">vs LY</th></tr></thead>
+            <tbody><sc-for list="{{ allMonths }}" as="m" hint-placeholder-count="12"><tr><td>{{ m.full }}</td><td style="text-align:right">{{ m.orders }}</td><td style="text-align:right;font-variant-numeric:tabular-nums">{{ m.revFmt }}</td><td style="text-align:right;color:var(--color-neutral-400)">{{ m.lyFmt }}</td><td style="text-align:right;color:var(--color-neutral-400)">{{ m.margin }}</td><td style="text-align:right;color:var(--color-accent-300)">{{ m.yoy }}</td></tr></sc-for></tbody>
+          </table></div>
+        </sc-if>
+      </section>
+      <section style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,320px),1fr));gap:var(--space-4)">
+        <sc-for list="{{ breakdowns }}" as="b" hint-placeholder-count="2">
+          <div class="card elev-sm" style="padding:var(--space-6);gap:var(--space-4);min-width:0">
+            <div class="card-title">{{ b.title }}</div>
+            <sc-for list="{{ b.rows }}" as="r" hint-placeholder-count="4">
+              <div style="display:flex;flex-direction:column;gap:6px">
+                <div style="display:flex;font-size:13px;gap:var(--space-3)"><span style="flex:1">{{ r.name }}</span><span style="color:var(--color-neutral-500)">{{ r.meta }}</span><span style="width:70px;text-align:right;font-variant-numeric:tabular-nums">{{ r.valFmt }}</span></div>
+                <sc-if value="{{ vis }}" hint-placeholder-val="{{ true }}"><div style="height:6px;border-radius:3px;background:var(--color-neutral-900)"><div style="width:{{ r.pct }};height:100%;border-radius:3px;background:var(--color-accent)"></div></div></sc-if>
+              </div>
+            </sc-for>
+          </div>
+        </sc-for>
+      </section>
+      <section class="card elev-sm" style="padding:var(--space-6);gap:var(--space-4)">
+        <div class="card-title">Top accounts</div>
+        <div style="overflow-x:auto"><table class="table" style="min-width:520px">
+          <thead><tr><th>Account</th><th>Rep</th><th style="text-align:right">Orders</th><th style="text-align:right">YTD revenue</th><th style="text-align:right">Share</th></tr></thead>
+          <tbody><sc-for list="{{ topAccounts }}" as="c" hint-placeholder-count="5"><tr onClick="{{ c.open }}" style="cursor:pointer"><td>{{ c.name }}</td><td style="color:var(--color-neutral-400)">{{ c.rep }}</td><td style="text-align:right">{{ c.orders }}</td><td style="text-align:right;font-variant-numeric:tabular-nums">{{ c.ytdFmt }}</td><td style="text-align:right;color:var(--color-neutral-400)">{{ c.share }}</td></tr></sc-for></tbody>
+        </table></div>
+      </section>
+    </sc-if>
+
+    <!-- SETTINGS -->
+    <sc-if value="{{ is.settings }}" hint-placeholder-val="{{ false }}">
+      <section data-screen-label="Settings" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,360px),1fr));gap:var(--space-4);align-items:start">
+        <div class="card elev-sm" style="padding:var(--space-6);gap:var(--space-4)">
+          <div class="card-title">Company</div>
+          <div class="field"><label>Legal name</label><input class="input" value="Lumen Goods Wholesale LLC"></div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:var(--space-3)"><div class="field"><label>Tax ID</label><input class="input" value="93-4418207"></div><div class="field"><label>Currency</label><input class="input" value="USD"></div></div>
+          <div class="field"><label>Billing email</label><input class="input" value="ar@lumengoods.co"></div>
+        </div>
+        <div class="card elev-sm" style="padding:var(--space-6);gap:var(--space-4)">
+          <div class="card-title">Credit &amp; terms</div>
+          <div class="field"><label>Default payment terms</label><div class="seg"><sc-for list="{{ termOpts }}" as="t" hint-placeholder-count="4"><label class="seg-opt"><input type="radio" name="terms" checked="{{ t.on }}" onChange="{{ t.pick }}">{{ t.label }}</label></sc-for></div></div>
+          <div class="field"><label>Default credit limit, new accounts</label><input class="input" value="$10,000"></div>
+          <sc-for list="{{ creditToggles }}" as="t" hint-placeholder-count="2">
+            <div style="display:flex;align-items:center;gap:var(--space-3)"><div style="flex:1;display:flex;flex-direction:column"><span style="font-size:14px">{{ t.label }}</span><span style="font-size:12px;color:var(--color-neutral-500)">{{ t.sub }}</span></div><button onClick="{{ t.flip }}" style="width:36px;height:20px;flex:none;border-radius:10px;border:1px solid {{ t.border }};background:{{ t.bg }};padding:0;cursor:pointer;position:relative"><span style="position:absolute;top:2px;left:{{ t.x }};width:14px;height:14px;border-radius:50%;background:{{ t.knob }}"></span></button></div>
+          </sc-for>
+        </div>
+        <div class="card elev-sm" style="padding:var(--space-6);gap:var(--space-3)">
+          <div style="display:flex;align-items:center"><div class="card-title" style="margin-right:auto">Warehouses</div><button class="btn btn-secondary" style="font-size:12px;padding:4px 10px"><i class="ph ph-plus"></i>Add</button></div>
+          <sc-for list="{{ warehouses }}" as="w" hint-placeholder-count="3"><div style="display:flex;align-items:center;gap:var(--space-3);padding:6px 0"><span class="tag tag-neutral">{{ w.code }}</span><div style="flex:1;display:flex;flex-direction:column;line-height:1.3"><span style="font-size:14px">{{ w.name }}</span><span style="font-size:12px;color:var(--color-neutral-500)">{{ w.city }}</span></div><span style="font-size:12px;color:var(--color-neutral-400)">{{ w.capFmt }} units cap.</span></div></sc-for>
+        </div>
+        <div class="card elev-sm" style="padding:var(--space-6);gap:var(--space-3)">
+          <div class="card-title">Notifications</div>
+          <sc-for list="{{ notifToggles }}" as="t" hint-placeholder-count="3">
+            <div style="display:flex;align-items:center;gap:var(--space-3)"><div style="flex:1;display:flex;flex-direction:column"><span style="font-size:14px">{{ t.label }}</span><span style="font-size:12px;color:var(--color-neutral-500)">{{ t.sub }}</span></div><button onClick="{{ t.flip }}" style="width:36px;height:20px;flex:none;border-radius:10px;border:1px solid {{ t.border }};background:{{ t.bg }};padding:0;cursor:pointer;position:relative"><span style="position:absolute;top:2px;left:{{ t.x }};width:14px;height:14px;border-radius:50%;background:{{ t.knob }}"></span></button></div>
+          </sc-for>
+        </div>
+        <div class="card elev-sm" style="padding:var(--space-6);gap:var(--space-3)">
+          <div style="display:flex;align-items:center"><div class="card-title" style="margin-right:auto">Team</div><button class="btn btn-secondary" style="font-size:12px;padding:4px 10px"><i class="ph ph-user-plus"></i>Invite</button></div>
+          <sc-for list="{{ team }}" as="m" hint-placeholder-count="4"><div style="display:flex;align-items:center;gap:var(--space-3);padding:4px 0"><div style="width:28px;height:28px;border-radius:50%;background:var(--color-neutral-800);display:grid;place-items:center;font-size:11px">{{ m.initials }}</div><div style="flex:1;display:flex;flex-direction:column;line-height:1.3"><span style="font-size:14px">{{ m.name }}</span><span style="font-size:12px;color:var(--color-neutral-500)">{{ m.email }}</span></div><span class="tag {{ m.tag }}">{{ m.role }}</span></div></sc-for>
+        </div>
+      </section>
+    </sc-if>
+
+    <!-- MORE (mobile) -->
+    <sc-if value="{{ is.more }}" hint-placeholder-val="{{ false }}">
+      <section style="display:flex;flex-direction:column;gap:var(--space-2)">
+        <sc-for list="{{ moreItems }}" as="n" hint-placeholder-count="4"><button class="btn" onClick="{{ n.go }}" style="justify-content:flex-start;gap:var(--space-4);padding:14px var(--space-4);background:var(--color-surface);font-size:15px"><i class="ph {{ n.icon }}" style="font-size:20px;color:var(--color-accent)"></i><span style="flex:1;text-align:left">{{ n.label }}</span><i class="ph ph-caret-right" style="color:var(--color-neutral-500)"></i></button></sc-for>
+      </section>
+    </sc-if>
+  </main>
+
+  <sc-if value="{{ isMobile }}" hint-placeholder-val="{{ false }}">
+    <nav style="position:absolute;left:0;right:0;bottom:0;display:grid;grid-template-columns:repeat(5,1fr);padding:8px 8px 26px;background:color-mix(in srgb, var(--color-bg) 88%, transparent);backdrop-filter:blur(12px);box-shadow:inset 0 1px 0 var(--color-neutral-900)">
+      <sc-for list="{{ tabs }}" as="t" hint-placeholder-count="5"><button onClick="{{ t.go }}" style="display:flex;flex-direction:column;align-items:center;gap:3px;min-height:48px;justify-content:center;background:none;border:0;cursor:pointer;font:inherit;font-size:10px;color:{{ t.color }}"><i class="ph {{ t.icon }}" style="font-size:22px"></i>{{ t.label }}</button></sc-for>
+    </nav>
+  </sc-if>
+
+  <sc-if value="{{ rs }}" hint-placeholder-val="{{ false }}">
+    <div class="dialog-backdrop" onClick="{{ rs.cancel }}" style="position:absolute;z-index:20">
+      <div class="dialog" onClick="{{ stop }}" style="width:min(480px,100%);max-height:100%;overflow-y:auto">
+        <div style="display:flex;flex-direction:column;gap:4px"><div class="card-kicker">Restock</div><div class="dialog-title">{{ rs.name }}</div><div style="font-size:12px;color:var(--color-neutral-500)">{{ rs.sku }} · {{ rs.stockLine }}</div></div>
+        <div class="seg" style="align-self:flex-start"><sc-for list="{{ rs.modes }}" as="m" hint-placeholder-count="2"><label class="seg-opt"><input type="radio" name="rsm" checked="{{ m.on }}" onChange="{{ m.pick }}"><i class="ph {{ m.icon }}"></i>{{ m.label }}</label></sc-for></div>
+        <sc-if value="{{ rs.isPO }}" hint-placeholder-val="{{ true }}">
+          <div style="display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:var(--space-3)">
+            <div class="field"><label>Supplier</label><div class="input" style="display:flex;align-items:center">{{ rs.supplier }}</div></div>
+            <div class="field"><label>Lead time</label><div class="input" style="display:flex;align-items:center">{{ rs.lead }}</div></div>
+          </div>
+        </sc-if>
+        <sc-if value="{{ rs.isTransfer }}" hint-placeholder-val="{{ false }}">
+          <div class="field"><label>Transfer from</label><div class="seg"><sc-for list="{{ rs.fromOpts }}" as="o" hint-placeholder-count="3"><label class="seg-opt"><input type="radio" name="rsf" checked="{{ o.on }}" onChange="{{ o.pick }}">{{ o.label }}<span style="font-size:11px;color:var(--color-neutral-500)">{{ o.meta }}</span></label></sc-for></div></div>
+        </sc-if>
+        <div class="field"><label>Deliver to</label><div class="seg"><sc-for list="{{ rs.destOpts }}" as="o" hint-placeholder-count="3"><label class="seg-opt"><input type="radio" name="rsd" checked="{{ o.on }}" onChange="{{ o.pick }}">{{ o.label }}<span style="font-size:11px;color:var(--color-neutral-500)">{{ o.meta }}</span></label></sc-for></div></div>
+        <div class="field"><label>Quantity · cases of {{ rs.pack }}</label>
+          <div style="display:flex;align-items:center;gap:var(--space-3);flex-wrap:wrap"><button class="btn btn-secondary btn-icon" onClick="{{ rs.dec }}"><i class="ph ph-minus"></i></button><div style="font-size:22px;font-weight:500;min-width:64px;text-align:center;font-variant-numeric:tabular-nums">{{ rs.qty }}</div><button class="btn btn-secondary btn-icon" onClick="{{ rs.inc }}"><i class="ph ph-plus"></i></button><span style="font-size:12px;color:var(--color-neutral-400)">{{ rs.suggestNote }}</span></div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:6px;padding:var(--space-3);border-radius:var(--radius-md);background:var(--color-bg);font-size:13px">
+          <sc-for list="{{ rs.summary }}" as="r" hint-placeholder-count="4"><div style="display:flex;gap:var(--space-3)"><span style="flex:1;color:var(--color-neutral-400)">{{ r.k }}</span><span style="font-variant-numeric:tabular-nums">{{ r.v }}</span></div></sc-for>
+        </div>
+        <sc-if value="{{ rs.warn }}" hint-placeholder-val="{{ false }}"><div style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--color-accent-300)"><i class="ph ph-warning"></i>{{ rs.warn }}</div></sc-if>
+        <div class="dialog-actions"><button class="btn btn-secondary" onClick="{{ rs.cancel }}">Cancel</button><button class="btn btn-primary" onClick="{{ rs.confirm }}" disabled="{{ rs.invalid }}">{{ rs.confirmLabel }}</button></div>
+      </div>
+    </div>
+  </sc-if>
+</div>
+
+<sc-if value="{{ showControls }}" hint-placeholder-val="{{ true }}">
+  <div style="position:fixed;right:16px;bottom:16px;z-index:50;display:flex;flex-direction:column;gap:8px;padding:10px 12px;border-radius:var(--radius-lg);background:var(--color-surface);box-shadow:var(--shadow-md)">
+    <span style="font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--color-neutral-500)">Mockup options</span>
+    <div class="seg"><sc-for list="{{ styleOpts }}" as="o" hint-placeholder-count="3"><label class="seg-opt"><input type="radio" name="ds" checked="{{ o.on }}" onChange="{{ o.pick }}">{{ o.label }}</label></sc-for></div>
+    <div class="seg"><sc-for list="{{ deviceOpts }}" as="o" hint-placeholder-count="2"><label class="seg-opt"><input type="radio" name="dv" checked="{{ o.on }}" onChange="{{ o.pick }}"><i class="ph {{ o.icon }}"></i>{{ o.label }}</label></sc-for></div>
+  </div>
+</sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;dataStyle&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;Visual&quot;,&quot;Hybrid&quot;,&quot;Tabular&quot;],&quot;default&quot;:&quot;Hybrid&quot;,&quot;tsType&quot;:&quot;'Visual'|'Hybrid'|'Tabular'&quot;},&quot;device&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;Desktop&quot;,&quot;Mobile&quot;],&quot;default&quot;:&quot;Desktop&quot;,&quot;tsType&quot;:&quot;'Desktop'|'Mobile'&quot;},&quot;showMockupControls&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;}}">
+class Component extends DCLogic {
+  state = { screen: 'overview', prev: [], orderId: null, custIdx: null, range: '30d', orderFilter: 'All', cat: 'All', wh: 'All', invStatus: 'All', invView: 'All', query: '', reordered: {}, reminded: {}, orderStatus: {}, style: null, device: null, terms: 'Net 30', toggles: { autohold: true, approve: true, low: true, overdue: true, digest: false, autopo: false }, restock: null, poSeq: 1190, trSeq: 413,
+    incoming: { 'LG-1051': { type: 'PO', ref: 'PO-1181', qty: 1200, wh: 'CMH', eta: 'Oct 2', source: 'Kiln & Co. Ceramics' }, 'LG-2290': { type: 'Transfer', ref: 'TR-0412', qty: 40, wh: 'CMH', eta: 'Sep 26', source: 'from PDX' } } };
+  stop = e => e.stopPropagation();
+  supplierFor(cat) { return { Kitchen: { name: 'Kiln & Co. Ceramics', lead: 21 }, Linens: { name: 'Fernhill Textiles', lead: 28 }, Home: { name: 'Westbrook Weavers', lead: 18 }, Candles: { name: 'Hollow Oak Chandlery', lead: 12 } }[cat]; }
+  eta(days) { return new Date(2026, 8, 24 + days).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }); }
+  refresh(p) { p.total = p.stock.reduce((a, b) => a + b, 0); const r = p.total / p.par; p.status = r < 0.5 ? 'Low' : r < 1 ? 'Reorder' : 'Healthy'; }
+  suggest(p) { const need = Math.max(p.par * 2 - p.total, p.moq); return Math.ceil(need / p.casePack) * p.casePack; }
+  suggestTransfer(p, from) { return Math.max(0, Math.min(Math.floor(p.stock[from] / 2 / p.casePack) * p.casePack, this.suggest(p))); }
+  openRestock(p) {
+    const idx = [0, 1, 2], dest = idx.reduce((a, b) => p.stock[b] < p.stock[a] ? b : a, 0);
+    const from = idx.filter(i => i !== dest).reduce((a, b) => p.stock[b] > p.stock[a] ? b : a);
+    this.setState({ restock: { sku: p.sku, mode: 'po', dest, from, qty: this.suggest(p) } });
+  }
+  receive(sku) {
+    const inc = this.state.incoming[sku], p = this.products.find(x => x.sku === sku);
+    p.stock[this.whs.findIndex(w => w.code === inc.wh)] += inc.qty; this.refresh(p);
+    this.setState(s => { const n = { ...s.incoming }; delete n[sku]; return { incoming: n }; });
+  }
+  mainRef = React.createRef();
+
+  constructor(p) {
+    super(p);
+    this.whs = [{ code: 'PDX', name: 'Portland DC', city: 'Portland, OR', cap: 9000 }, { code: 'CMH', name: 'Columbus DC', city: 'Columbus, OH', cap: 6500 }, { code: 'RNO', name: 'Reno DC', city: 'Reno, NV', cap: 4000 }];
+    this.products = [
+      ['Ceramic Pour-Over Set','LG-1042','Kitchen',18,32,64,6,6,[420,210,96],120,300],
+      ['Stoneware Mug, Dusk','LG-1051','Kitchen',4.2,9,24,24,12,[1840,1210,640],600,1200],
+      ['Walnut Serving Board','LG-1188','Kitchen',14,28,62,6,4,[96,40,12],60,150],
+      ['Glass Carafe, 1L','LG-1077','Kitchen',9,19,42,6,6,[330,190,120],80,200],
+      ['Cotton Napkins, Set of 4','LG-1210','Linens',6,12,26,12,12,[80,24,0],40,200],
+      ['Linen Throw, Slate','LG-2210','Linens',22,44,89,4,4,[36,12,8],30,120],
+      ['Wool Blend Blanket','LG-2240','Linens',38,72,142,4,2,[140,90,44],50,120],
+      ['Rattan Tray','LG-2275','Home',12,26,54,6,6,[210,160,70],40,150],
+      ['Jute Doormat','LG-2290','Home',11,22,48,4,4,[150,0,60],20,100],
+      ['Hand-Poured Soy Candle','LG-3305','Candles',6,15,32,12,12,[980,640,410],300,600],
+      ['Beeswax Taper Pair','LG-3301','Candles',3.5,8,18,24,24,[60,30,0],50,300],
+      ['Brass Candle Snuffer','LG-3320','Candles',7,14,28,6,6,[18,6,4],10,80]
+    ].map(([name, sku, cat, cost, ws, msrp, moq, casePack, stock, allocated, par]) => {
+      const total = stock.reduce((a, b) => a + b, 0), r = total / par;
+      return { name, sku, cat, cost, ws, msrp, moq, casePack, stock, allocated, par, total, status: r < 0.5 ? 'Low' : r < 1 ? 'Reorder' : 'Healthy' };
+    });
+    this.customers = [
+      ['Harbor & Pine Mercantile','Alana Brooks','Portland, OR','Gold','Net 45',60000,38400,'Maya Rivera',184200,46,'2019'],
+      ['Northfield Home','Sam Whitaker','Denver, CO','Gold','Net 45',50000,21250,'Maya Rivera',142800,38,'2020'],
+      ['Ellis Park Café','Rosa Jimenez','Chicago, IL','Silver','Net 30',15000,14100,'Jordan Lee',48600,22,'2021'],
+      ['Quill & Ash','Theo Grant','Brooklyn, NY','Silver','Net 30',20000,6800,'Jordan Lee',61300,19,'2021'],
+      ['Tidewater Goods','Nina Patel','Charleston, SC','Standard','Net 15',8000,9200,'Priya Shah',22400,11,'2023'],
+      ['Kestrel Design Co.','Owen Park','Seattle, WA','Gold','Net 60',75000,42900,'Maya Rivera',212500,51,'2018'],
+      ['Maple & Main','Grace Olsen','Madison, WI','Standard','Net 30',10000,2300,'Priya Shah',18900,9,'2024'],
+      ['Saltbox General','Leo Fischer','Portland, ME','Silver','Net 30',20000,11750,'Jordan Lee',57200,24,'2022'],
+      ['Bramble Studio','Iris Chen','Austin, TX','Standard','Net 15',6000,0,'Priya Shah',9800,5,'2025'],
+      ['Copper Kettle Shops','Marcus Hale','Minneapolis, MN','Gold','Net 45',50000,27600,'Maya Rivera',131400,33,'2019']
+    ].map(([name, contact, city, tier, terms, limit, balance, rep, ytd, orders, since], idx) => ({ idx, name, contact, city, tier, terms, limit, balance, rep, ytd, orders, since, email: contact.split(' ')[0].toLowerCase() + '@' + name.toLowerCase().replace(/[^a-z]/g, '').slice(0, 12) + '.com', initials: name.replace(/&/g, '').split(' ').filter(Boolean).slice(0, 2).map(w => w[0]).join('') }));
+    this.invoices = [
+      ['INV-2291',0,'Aug 12','Sep 26',12400,0,false],['INV-2288',5,'Jul 30','Sep 28',18600,0,false],['INV-2284',2,'Aug 01','Aug 31',6200,24,false],
+      ['INV-2279',4,'Jul 18','Aug 02',4800,53,false],['INV-2276',4,'Jun 20','Jul 05',4400,81,false],['INV-2274',1,'Aug 20','Oct 04',9850,0,false],
+      ['INV-2270',7,'Aug 25','Sep 24',5600,0,false],['INV-2266',9,'Aug 14','Sep 28',11200,0,false],['INV-2261',3,'Aug 10','Sep 09',3400,0,true],
+      ['INV-2259',0,'Jul 02','Aug 16',14800,0,true],['INV-2255',7,'Jul 15','Aug 14',6150,41,false],['INV-2251',6,'Aug 22','Sep 21',2300,3,false],
+      ['INV-2248',5,'Aug 30','Oct 29',24300,0,false],['INV-2244',9,'Sep 02','Oct 17',16400,0,false],['INV-2240',2,'Sep 05','Oct 05',7900,0,false],['INV-2236',1,'Jul 11','Aug 25',11400,0,true]
+    ].map(([id, ci, issued, due, amount, late, paid]) => ({ id, ci, issued, due, amount, late, paid, status: paid ? 'Paid' : late > 0 ? 'Overdue' : 'Open' }));
+    const oc = [0,5,1,2,9,3,7,0,4,6,5,1,8,9,2,3];
+    const st = ['Placed','Picking','Placed','Shipped','Picking','Delivered','Shipped','Delivered','On hold','Delivered','Delivered','Shipped','Delivered','Delivered','Delivered','Delivered'];
+    const dt = ['Sep 24','Sep 24','Sep 23','Sep 23','Sep 23','Sep 22','Sep 22','Sep 21','Sep 21','Sep 20','Sep 19','Sep 19','Sep 18','Sep 17','Sep 16','Sep 15'];
+    this.orders = oc.map((ci, i) => {
+      const c = this.customers[ci], wh = this.whs[i % 3].code;
+      const lines = Array.from({ length: 2 + (i % 3) }, (_, k) => { const p = this.products[(i * 5 + k * 3) % 12]; const qty = p.casePack * (1 + (i + k) % 4) * (c.tier === 'Gold' ? 3 : c.tier === 'Silver' ? 2 : 1); return { p, qty, wh }; });
+      const sub = lines.reduce((a, l) => a + l.qty * l.p.ws, 0);
+      const disc = sub * (c.tier === 'Gold' ? 0.08 : c.tier === 'Silver' ? 0.04 : 0);
+      const freight = 45 + lines.length * 30;
+      return { id: '#' + (20486 - i), po: 'PO-' + (7730 + i * 7), ci, date: dt[i], status: st[i], wh, lines, sub, disc, freight, total: sub - disc + freight, units: lines.reduce((a, l) => a + l.qty, 0), inv: 'INV-' + (2300 - i) };
+    });
+    this.mLabels = ['Oct','Nov','Dec','Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep'];
+    this.mFull = ['October 2025','November 2025','December 2025','January 2026','February 2026','March 2026','April 2026','May 2026','June 2026','July 2026','August 2026','September 2026'];
+    this.rev = [312,298,356,241,268,305,334,352,368,341,389,412].map(v => v * 1000);
+    this.ly = [281,270,318,226,239,262,297,309,321,306,338,352].map(v => v * 1000);
+    this.mOrders = [142,137,161,112,121,139,151,158,166,154,172,186];
+    this.margin = [41.2,40.8,39.6,42.1,41.7,42.4,42.9,43.1,42.6,43.4,43.8,44.1];
+  }
+
+  money(n, d = 0) { return '$' + n.toLocaleString('en-US', { minimumFractionDigits: d, maximumFractionDigits: d }); }
+  k(n) { return n >= 1e6 ? '$' + (n / 1e6).toFixed(2) + 'M' : n >= 1e3 ? '$' + (n / 1e3).toFixed(1) + 'k' : this.money(n); }
+  pct(a, b) { return Math.max(0, Math.min(100, Math.round(a / b * 100))) + '%'; }
+  path(vals, w, h, lo, hi) { const pts = vals.map((v, i) => [i * w / (vals.length - 1), h - (v - lo) / (hi - lo) * (h - 8) - 2]); return 'M' + pts.map(p => p[0].toFixed(1) + ' ' + p[1].toFixed(1)).join(' L'); }
+  orderTag(s) { return { Placed: 'tag-outline', Picking: 'tag-accent', Shipped: 'tag-accent', Delivered: 'tag-neutral', 'On hold': 'tag-outline' }[s]; }
+  invTag(s) { return { Open: 'tag-accent', Overdue: 'tag-outline', Paid: 'tag-neutral' }[s]; }
+  statusOf(o) { return this.state.orderStatus[o.id] || o.status; }
+  custStatus(c) { if (c.balance > c.limit) return 'On hold'; if (this.invoices.some(i => i.ci === c.idx && i.status === 'Overdue')) return 'Overdue'; return 'Good standing'; }
+  q(...f) { const q = this.state.query.trim().toLowerCase(); return !q || f.some(x => String(x).toLowerCase().includes(q)); }
+
+  nav(screen, extra = {}) {
+    this.setState(s => ({ screen, query: '', prev: extra.keepPrev ? [...s.prev, { screen: s.screen, orderId: s.orderId, custIdx: s.custIdx }] : [], ...extra }));
+    if (this.mainRef.current) this.mainRef.current.scrollTop = 0;
+  }
+  openOrder(id) { this.nav('order', { orderId: id, keepPrev: true }); }
+  openCust(idx) { this.nav('customer', { custIdx: idx, keepPrev: true }); }
+  back() { const p = this.state.prev; const last = p[p.length - 1] || { screen: 'overview' }; this.setState({ ...last, prev: p.slice(0, -1) }); if (this.mainRef.current) this.mainRef.current.scrollTop = 0; }
+
+  orderRow(o) { const c = this.customers[o.ci], s = this.statusOf(o); return { id: o.id, po: o.po, date: o.date, customer: c.name, wh: o.wh, units: o.units, status: s, tagClass: this.orderTag(s), totalFmt: this.money(o.total), open: () => this.openOrder(o.id) }; }
+  invRow(i) {
+    const c = this.customers[i.ci], rem = this.state.reminded[i.id];
+    return { id: i.id, customer: c.name, issued: i.issued, due: i.due, terms: c.terms, amountFmt: this.money(i.amount), tagClass: this.invTag(i.status), statusLabel: i.status === 'Overdue' ? i.late + 'd overdue' : i.status, canRemind: i.status !== 'Paid', btnClass: rem ? 'btn-ghost' : i.status === 'Overdue' ? 'btn-primary' : 'btn-secondary', btnLabel: rem ? 'Reminder sent' : 'Send reminder', remind: () => this.setState(s => ({ reminded: { ...s.reminded, [i.id]: true } })), openCustomer: () => this.openCust(i.ci) };
+  }
+  credit(c) { const r = c.balance / c.limit; return { creditBar: this.pct(c.balance, c.limit), creditPct: Math.round(r * 100) + '%', creditColor: r > 1 ? 'var(--color-accent-300)' : r > 0.85 ? 'var(--color-accent-400)' : 'var(--color-accent-600)' }; }
+  toggle(key, label, sub) { const on = this.state.toggles[key]; return { label, sub, bg: on ? 'var(--color-accent-800)' : 'transparent', border: on ? 'var(--color-accent)' : 'var(--color-neutral-700)', knob: on ? 'var(--color-accent)' : 'var(--color-neutral-500)', x: on ? '18px' : '2px', flip: () => this.setState(s => ({ toggles: { ...s.toggles, [key]: !s.toggles[key] } })) }; }
+
+  renderVals() {
+    const s = this.state;
+    const style = s.style || this.props.dataStyle || 'Hybrid';
+    const device = s.device || this.props.device || 'Desktop';
+    const mob = device === 'Mobile';
+    const vis = style !== 'Tabular';
+    const L = mob
+      ? { outerPad: '32px', cols: 'minmax(0,1fr)', w: '390px', h: '844px', r: '44px', shadow: 'var(--shadow-lg)', pad: '60px 16px 110px', gap: '16px', h2: '24px', searchW: '100%', kpiCols: 'repeat(2,minmax(0,1fr))', split: 'minmax(0,1fr)', whCols: 'minmax(0,1fr)', agingCols: 'repeat(2,minmax(0,1fr))', sparkW: '0px', barGap: '4px' }
+      : { outerPad: '0', cols: '216px minmax(0,1fr)', w: '100%', h: '100vh', r: '0', shadow: 'none', pad: '28px 34px 48px', gap: '22px', h2: '28px', searchW: '240px', kpiCols: 'repeat(auto-fit,minmax(200px,1fr))', split: 'minmax(0,1.7fr) minmax(300px,1fr)', whCols: 'repeat(auto-fit,minmax(240px,1fr))', agingCols: 'repeat(auto-fit,minmax(130px,1fr))', sparkW: '72px', barGap: '8px' };
+    if (mob) L.sparkW = '56px';
+
+    const scr = s.screen;
+    const section = { order: 'orders', customer: 'customers' }[scr] || scr;
+    const is = { [scr]: true };
+
+    const openOrders = this.orders.filter(o => !['Delivered'].includes(this.statusOf(o))).length;
+    const unpaid = this.invoices.filter(i => !i.paid);
+    const overdue = unpaid.filter(i => i.status === 'Overdue');
+    const arSum = unpaid.reduce((a, i) => a + i.amount, 0);
+    const overdueSum = overdue.reduce((a, i) => a + i.amount, 0);
+    const invValue = this.products.reduce((a, p) => a + p.total * p.cost, 0);
+    const lowList = this.products.filter(p => p.status !== 'Healthy');
+
+    const navDefs = [['overview','Overview','ph-squares-four'],['orders','Orders','ph-receipt'],['customers','Customers','ph-users-three'],['products','Products','ph-package'],['inventory','Inventory','ph-warehouse'],['invoices','Invoices','ph-file-text'],['reports','Reports','ph-chart-line-up'],['settings','Settings','ph-gear-six']];
+    const nav = navDefs.map(([id, label, icon]) => ({ label, icon, badge: id === 'orders' ? openOrders : id === 'invoices' ? overdue.length : id === 'inventory' ? lowList.length : '', color: section === id ? 'var(--color-accent)' : 'var(--color-neutral-300)', bg: section === id ? 'color-mix(in srgb, var(--color-accent) 12%, transparent)' : 'transparent', go: () => this.nav(id) }));
+    const moreIds = ['products', 'invoices', 'reports', 'settings', 'more'];
+    const tabs = [['overview','Home','ph-squares-four'],['orders','Orders','ph-receipt'],['customers','Accounts','ph-users-three'],['inventory','Stock','ph-warehouse'],['more','More','ph-dots-three-outline']].map(([id, label, icon]) => { const on = id === 'more' ? moreIds.includes(section) : section === id; return { label, icon, color: on ? 'var(--color-accent)' : 'var(--color-neutral-500)', go: () => this.nav(id) }; });
+    const moreItems = navDefs.filter(n => moreIds.includes(n[0])).map(([id, label, icon]) => ({ label, icon, go: () => this.nav(id, { keepPrev: true }) }));
+
+    const rangeData = { '30d': [412400, '+7.9%', 186, '+4.1%'], QTD: [1142000, '+11.2%', 521, '+6.8%'], YTD: [3284000, '+14.6%', 1498, '+9.3%'] }[s.range];
+    const kpis = [
+      { label: 'Revenue', icon: 'ph-currency-dollar', value: this.k(rangeData[0]), delta: rangeData[1], note: 'vs prior period', deltaColor: 'var(--color-accent-300)', spark: this.path(this.rev, 100, 28, 230000, 420000) },
+      { label: 'Orders', icon: 'ph-receipt', value: rangeData[2].toLocaleString(), delta: rangeData[3], note: openOrders + ' open', deltaColor: 'var(--color-accent-300)', spark: this.path(this.mOrders, 100, 28, 105, 190) },
+      { label: 'Outstanding AR', icon: 'ph-file-text', value: this.k(arSum), delta: this.k(overdueSum), note: 'overdue · ' + overdue.length + ' invoices', deltaColor: 'var(--color-accent-300)', spark: this.path([98,104,112,108,117,121,119,126,131,128,134,130], 100, 28, 95, 136) },
+      { label: 'Inventory value', icon: 'ph-warehouse', value: this.k(invValue), delta: lowList.length + ' SKUs', note: 'at or below reorder', deltaColor: 'var(--color-accent-300)', spark: this.path([61,64,59,57,62,66,63,60,58,61,59,57], 100, 28, 55, 67) }
+    ];
+
+    const maxRev = Math.max(...this.rev, ...this.ly);
+    const line = this.path(this.rev, 600, 200, 0, maxRev);
+    const chart = { line, area: line + ' L600 200 L0 200 Z', ly: this.path(this.ly, 600, 200, 0, maxRev) };
+    const months = this.mLabels.map((label, i) => ({ label: mob ? label[0] : label, tip: label + ': ' + this.k(this.rev[i]), h: Math.round(this.rev[i] / maxRev * 100) + '%', bg: i === 11 ? 'var(--color-accent)' : 'var(--color-accent-800)', glow: i === 11 ? '0 0 16px var(--color-accent-700)' : 'none' }));
+    const monthRow = i => ({ full: this.mFull[i], orders: this.mOrders[i], revFmt: this.money(this.rev[i]), lyFmt: this.money(this.ly[i]), margin: this.margin[i].toFixed(1) + '%', yoy: '+' + ((this.rev[i] / this.ly[i] - 1) * 100).toFixed(1) + '%' });
+    const allMonths = this.mLabels.map((_, i) => monthRow(i)).reverse();
+
+    const buckets = [['Current', i => i.late === 0], ['1–30 days', i => i.late > 0 && i.late <= 30], ['31–60 days', i => i.late > 30 && i.late <= 60], ['61–90 days', i => i.late > 60 && i.late <= 90], ['90+ days', i => i.late > 90]];
+    const agingColors = ['var(--color-neutral-700)', 'var(--color-accent-800)', 'var(--color-accent-700)', 'var(--color-accent-500)', 'var(--color-accent-300)'];
+    const aging = buckets.map(([label, f], i) => { const list = unpaid.filter(f); const amt = list.reduce((a, x) => a + x.amount, 0); return { label, count: list.length, amountFmt: this.k(amt), pct: (amt / arSum * 100).toFixed(1) + '%', color: agingColors[i] }; });
+
+    const warehouses = this.whs.map((w, wi) => { const units = this.products.reduce((a, p) => a + p.stock[wi], 0); const value = this.products.reduce((a, p) => a + p.stock[wi] * p.cost, 0); const on = s.wh === w.code; return { ...w, unitsFmt: units.toLocaleString(), valueFmt: this.k(value), capFmt: w.cap.toLocaleString(), capPct: this.pct(units, w.cap), low: this.products.filter(p => p.stock[wi] < p.par / 3).length, ring: on ? '0 0 0 1px var(--color-accent), 0 0 18px var(--color-accent-900)' : 'var(--shadow-sm)', pick: () => this.setState({ wh: on ? 'All' : w.code }) }; });
+    const split = p => this.whs.map((w, i) => w.code + ' ' + p.stock[i]).join(' · ');
+    const lowStock = lowList.slice(0, 5).map(p => ({ name: p.name, total: p.total, par: p.par, pct: this.pct(p.total, p.par), split: split(p) }));
+
+    // orders
+    const ofs = ['All', 'Placed', 'Picking', 'Shipped', 'Delivered', 'On hold'];
+    const orderFilters = ofs.map(f => ({ label: f, count: f === 'All' ? this.orders.length : this.orders.filter(o => this.statusOf(o) === f).length, on: s.orderFilter === f, pick: () => this.setState({ orderFilter: f }) })).filter(f => f.count > 0 || f.label === s.orderFilter);
+    const orders = this.orders.filter(o => (s.orderFilter === 'All' || this.statusOf(o) === s.orderFilter) && this.q(o.id, o.po, this.customers[o.ci].name)).map(o => this.orderRow(o));
+
+    // order detail
+    let order = {}, titleTag = null;
+    const seq = ['Placed', 'Picking', 'Shipped', 'Delivered'];
+    if (scr === 'order') {
+      const o = this.orders.find(x => x.id === s.orderId), c = this.customers[o.ci], st = this.statusOf(o), idx = seq.indexOf(st);
+      const whObj = this.whs.find(w => w.code === o.wh);
+      order = {
+        customer: c.name, tier: c.tier + ' tier', terms: c.terms, address: '218 Market St, ' + c.city, totalFmt: this.money(o.total, 2),
+        steps: seq.map((label, i) => ({ label, date: i <= idx ? (i === 0 ? o.date : i === idx ? 'Today' : o.date) : '—', bar: i <= idx ? 'var(--color-accent)' : 'var(--color-neutral-800)', glow: i === idx ? '0 0 10px var(--color-accent-700)' : 'none', color: i <= idx ? 'var(--color-text)' : 'var(--color-neutral-500)' })),
+        lines: o.lines.map(l => ({ name: l.p.name, sku: l.p.sku, pack: l.p.casePack, wh: l.wh, qty: l.qty, unitFmt: this.money(l.p.ws, 2), totalFmt: this.money(l.qty * l.p.ws, 2) })),
+        summary: [{ k: 'Subtotal', v: this.money(o.sub, 2) }, { k: c.tier + ' discount', v: '−' + this.money(o.disc, 2) }, { k: 'Freight', v: this.money(o.freight, 2) }],
+        invoiceFacts: [{ k: 'Invoice', v: idx >= 2 ? o.inv : 'On shipment' }, { k: 'Terms', v: c.terms }, { k: 'Credit available', v: this.money(Math.max(0, c.limit - c.balance)) }],
+        shipFacts: [{ k: 'Ships from', v: whObj.name }, { k: 'Carrier', v: o.units > 150 ? 'LTL freight' : 'UPS Ground' }, { k: 'Tracking', v: idx >= 2 ? '1Z84' + o.po.slice(3) + 'W' : '—' }],
+        openCustomer: () => this.openCust(o.ci)
+      };
+      titleTag = { label: st, cls: this.orderTag(st) };
+    }
+
+    // customers
+    const custRows = this.customers.filter(c => this.q(c.name, c.contact, c.city, c.rep)).map(c => { const st = this.custStatus(c); return { ...c, ...this.credit(c), balanceFmt: this.k(c.balance), limitFmt: this.k(c.limit), ytdFmt: this.k(c.ytd), tierTag: c.tier === 'Gold' ? 'tag-accent' : 'tag-neutral', status: st, statusTag: st === 'Good standing' ? 'tag-neutral' : 'tag-outline', open: () => this.openCust(c.idx) }; });
+    const custStats = [{ label: 'Active accounts', value: this.customers.length }, { label: 'Credit extended', value: this.k(this.customers.reduce((a, c) => a + c.limit, 0)) }, { label: 'Balance owed', value: this.k(this.customers.reduce((a, c) => a + c.balance, 0)) }, { label: 'On hold / overdue', value: this.customers.filter(c => this.custStatus(c) !== 'Good standing').length }];
+
+    let cust = {};
+    if (scr === 'customer') {
+      const c = this.customers[s.custIdx], cr = this.credit(c), st = this.custStatus(c);
+      const avail = c.limit - c.balance;
+      const tally = {}; this.orders.filter(o => o.ci === c.idx).forEach(o => o.lines.forEach(l => { tally[l.p.name] = (tally[l.p.name] || 0) + l.qty; }));
+      cust = {
+        ...cr,
+        facts: [{ k: 'YTD revenue', v: this.k(c.ytd) }, { k: 'Balance', v: this.money(c.balance) }, { k: 'Credit limit', v: this.money(c.limit) }, { k: 'Available', v: avail < 0 ? '−' + this.money(-avail) : this.money(avail) }],
+        creditNote: avail < 0 ? 'Over limit by ' + this.money(-avail) + '. New orders are held until payment clears.' : st === 'Overdue' ? 'Within limit, but has overdue invoices.' : this.money(avail) + ' available on ' + c.terms + ' terms.',
+        invoices: this.invoices.filter(i => i.ci === c.idx).map(i => this.invRow(i)),
+        orders: this.orders.filter(o => o.ci === c.idx).map(o => this.orderRow(o)),
+        info: [{ k: 'Buyer', v: c.contact }, { k: 'Email', v: c.email }, { k: 'Phone', v: '(503) 555-01' + (10 + c.idx) }, { k: 'Ship to', v: '218 Market St, ' + c.city }, { k: 'Sales rep', v: c.rep }, { k: 'Customer since', v: c.since }],
+        top: Object.entries(tally).sort((a, b) => b[1] - a[1]).slice(0, 4).map(([name, units]) => ({ name, units }))
+      };
+      titleTag = { label: st, cls: st === 'Good standing' ? 'tag-neutral' : 'tag-outline' };
+    }
+
+    // products
+    const cats = ['All', 'Kitchen', 'Linens', 'Home', 'Candles'];
+    const catFilters = cats.map(f => ({ label: f, on: s.cat === f, pick: () => this.setState({ cat: f }) }));
+    const productRows = this.products.filter(p => (s.cat === 'All' || p.cat === s.cat) && this.q(p.name, p.sku, p.cat)).map(p => ({ ...p, costFmt: this.money(p.cost, 2), wsFmt: this.money(p.ws, 2), msrpFmt: this.money(p.msrp, 2), margin: Math.round((1 - p.cost / p.ws) * 100) + '%', avail: (p.total - p.allocated).toLocaleString() }));
+
+    // inventory
+    const invFilters = ['All', 'Low', 'Reorder'].map(f => ({ label: f === 'All' ? 'All SKUs' : f, count: f === 'All' ? this.products.length : this.products.filter(p => p.status === f).length, on: s.invView === f, pick: () => this.setState({ invView: f }) }));
+    const whHeads = this.whs.map(w => ({ code: w.code, color: s.wh === w.code ? 'var(--color-accent)' : 'inherit' }));
+    const invRows = this.products.filter(p => (s.invView === 'All' || p.status === s.invView) && this.q(p.name, p.sku)).map(p => {
+      const inc = s.incoming[p.sku], r = p.total / p.par;
+      return { name: p.name, sku: p.sku, total: p.total, par: p.par, allocated: p.allocated, split: split(p), pct: this.pct(p.total, p.par), barColor: r < 0.5 ? 'var(--color-accent-300)' : r < 1 ? 'var(--color-accent-500)' : 'var(--color-neutral-600)', status: inc ? 'On order' : p.status, tagClass: inc ? 'tag-accent' : p.status === 'Low' ? 'tag-outline' : 'tag-neutral',
+        incomingText: inc ? '+' + inc.qty + ' ' + inc.wh + ' · ' + inc.eta : '—', inColor: inc ? 'var(--color-accent-300)' : 'var(--color-neutral-600)', incomingShort: inc ? 'Incoming +' + inc.qty + ' to ' + inc.wh + ', ETA ' + inc.eta : '',
+        cells: p.stock.map((v, i) => ({ v, color: v === 0 ? 'var(--color-accent-300)' : s.wh === this.whs[i].code ? 'var(--color-text)' : s.wh === 'All' ? 'var(--color-neutral-300)' : 'var(--color-neutral-600)' })),
+        canReorder: !inc && p.status !== 'Healthy', btnClass: 'btn-primary', btnLabel: 'Restock', reorder: () => this.openRestock(p) };
+    });
+    const inbound = Object.entries(s.incoming).map(([sku, b]) => ({ ...b, name: this.products.find(p => p.sku === sku).name, tag: b.type === 'PO' ? 'tag-accent' : 'tag-neutral', receive: () => this.receive(sku) }));
+    let rs = null;
+    if (s.restock) {
+      const r = s.restock, p = this.products.find(x => x.sku === r.sku), sup = this.supplierFor(p.cat), isPO = r.mode === 'po';
+      const destCode = this.whs[r.dest].code, fromCode = this.whs[r.from].code, maxT = p.stock[r.from];
+      const eta = this.eta(isPO ? sup.lead : 3);
+      const warn = !isPO && r.from === r.dest ? 'Pick two different warehouses.' : !isPO && r.qty > maxT ? 'Only ' + maxT + ' units at ' + fromCode + '.' : isPO && r.qty < p.moq ? 'Below the supplier minimum of ' + p.moq + '.' : '';
+      const invalid = r.qty <= 0 || (!isPO && (r.from === r.dest || r.qty > maxT));
+      const upd = patch => this.setState(x => ({ restock: { ...x.restock, ...patch } }));
+      rs = {
+        name: p.name, sku: p.sku, pack: p.casePack, qty: r.qty, stockLine: split(p) + ' · reorder point ' + p.par,
+        modes: [['po', 'Purchase order', 'ph-truck'], ['transfer', 'Transfer', 'ph-arrows-left-right']].map(([m, label, icon]) => ({ label, icon, on: r.mode === m, pick: () => upd({ mode: m, qty: m === 'po' ? this.suggest(p) : this.suggestTransfer(p, r.from) }) })),
+        isPO, isTransfer: !isPO, supplier: sup.name, lead: sup.lead + ' days',
+        destOpts: this.whs.map((w, i) => ({ label: w.code, meta: p.stock[i], on: r.dest === i, pick: () => upd({ dest: i }) })),
+        fromOpts: this.whs.map((w, i) => ({ label: w.code, meta: p.stock[i], on: r.from === i, pick: () => upd({ from: i, qty: this.suggestTransfer(p, i) }) })),
+        dec: () => upd({ qty: Math.max(0, r.qty - p.casePack) }), inc: () => upd({ qty: r.qty + p.casePack }),
+        suggestNote: isPO ? 'Suggested ' + this.suggest(p) + ' · MOQ ' + p.moq : maxT + ' available at ' + fromCode,
+        summary: isPO
+          ? [{ k: 'Unit cost', v: this.money(p.cost, 2) }, { k: 'PO total', v: this.money(r.qty * p.cost, 2) }, { k: 'Expected at ' + destCode, v: eta }, { k: 'Total on hand after', v: (p.total + r.qty) + ' units' }]
+          : [{ k: fromCode + ' after transfer', v: (maxT - r.qty) + ' units' }, { k: destCode + ' after transfer', v: (p.stock[r.dest] + r.qty) + ' units' }, { k: 'Expected', v: eta }, { k: 'Total on hand', v: 'Unchanged · ' + p.total }],
+        warn, invalid, confirmLabel: isPO ? 'Create PO-' + s.poSeq : 'Create transfer',
+        confirm: () => {
+          if (invalid) return;
+          if (!isPO) { p.stock[r.from] -= r.qty; this.refresh(p); }
+          this.setState(x => ({ restock: null, poSeq: isPO ? x.poSeq + 1 : x.poSeq, trSeq: isPO ? x.trSeq : x.trSeq + 1, incoming: { ...x.incoming, [p.sku]: isPO ? { type: 'PO', ref: 'PO-' + x.poSeq, qty: r.qty, wh: destCode, eta, source: sup.name } : { type: 'Transfer', ref: 'TR-0' + x.trSeq, qty: r.qty, wh: destCode, eta, source: 'from ' + fromCode } } }));
+        },
+        cancel: () => this.setState({ restock: null })
+      };
+    }
+
+    // invoices
+    const invStatusFilters = ['All', 'Open', 'Overdue', 'Paid'].map(f => ({ label: f, count: f === 'All' ? this.invoices.length : this.invoices.filter(i => i.status === f).length, on: s.invStatus === f, pick: () => this.setState({ invStatus: f }) }));
+    const invoices = this.invoices.filter(i => (s.invStatus === 'All' || i.status === s.invStatus) && this.q(i.id, this.customers[i.ci].name)).sort((a, b) => b.late - a.late).map(i => this.invRow(i));
+
+    // reports
+    const catRev = { Kitchen: 0.38, Candles: 0.24, Linens: 0.22, Home: 0.16 }, revT = this.rev.reduce((a, b) => a + b, 0);
+    const reps = ['Maya Rivera', 'Jordan Lee', 'Priya Shah'].map(r => { const cs = this.customers.filter(c => c.rep === r); return { name: r, v: cs.reduce((a, c) => a + c.ytd, 0), n: cs.length }; });
+    const repMax = Math.max(...reps.map(r => r.v));
+    const breakdowns = [
+      { title: 'Revenue by category', rows: Object.entries(catRev).map(([name, sh]) => ({ name, meta: Math.round(sh * 100) + '%', valFmt: this.k(revT * sh), pct: Math.round(sh / 0.38 * 100) + '%' })) },
+      { title: 'Revenue by rep', rows: reps.map(r => ({ name: r.name, meta: r.n + ' accounts', valFmt: this.k(r.v), pct: Math.round(r.v / repMax * 100) + '%' })) }
+    ];
+    const ytdT = this.customers.reduce((a, c) => a + c.ytd, 0);
+    const topAccounts = [...this.customers].sort((a, b) => b.ytd - a.ytd).slice(0, 6).map(c => ({ name: c.name, rep: c.rep, orders: c.orders, ytdFmt: this.money(c.ytd), share: (c.ytd / ytdT * 100).toFixed(1) + '%', open: () => this.openCust(c.idx) }));
+
+    // header
+    const hdr = {
+      overview: ['Good morning, Maya', 'Thursday, September 24'],
+      orders: ['Orders', openOrders + ' open · ' + this.orders.length + ' this month'],
+      order: [s.orderId || '', scr === 'order' ? (this.orders.find(o => o.id === s.orderId) || {}).po + ' · placed ' + (this.orders.find(o => o.id === s.orderId) || {}).date : ''],
+      customers: ['Accounts', this.customers.length + ' wholesale accounts'],
+      customer: [scr === 'customer' ? this.customers[s.custIdx].name : '', scr === 'customer' ? this.customers[s.custIdx].tier + ' · ' + this.customers[s.custIdx].terms + ' · ' + this.customers[s.custIdx].city : ''],
+      products: ['Products', this.products.length + ' SKUs · wholesale price list'],
+      inventory: ['Inventory', '3 warehouses · ' + this.k(invValue) + ' at cost'],
+      invoices: ['Invoices', this.k(arSum) + ' outstanding'],
+      reports: ['Reports', 'October 2025 – September 2026'],
+      settings: ['Settings', 'Lumen Goods Wholesale'],
+      more: ['More', '']
+    }[scr];
+    const actions = {
+      overview: mob ? null : { label: 'Export', icon: 'ph-export', fn: () => {} },
+      orders: { label: 'New order', icon: 'ph-plus', fn: () => {} },
+      customers: mob ? null : { label: 'Add account', icon: 'ph-plus', fn: () => {} },
+      products: mob ? null : { label: 'Add product', icon: 'ph-plus', fn: () => {} },
+      inventory: mob ? null : { label: 'Transfer stock', icon: 'ph-arrows-left-right', fn: () => {} },
+      invoices: mob ? null : { label: 'Export aging', icon: 'ph-export', fn: () => {} },
+      reports: mob ? null : { label: 'Export', icon: 'ph-export', fn: () => {} },
+      settings: { label: 'Save', icon: 'ph-check', fn: () => {} },
+      customer: { label: 'New order', icon: 'ph-plus', fn: () => {} }
+    };
+    let headerAction = actions[scr] || null;
+    if (scr === 'order') {
+      const o = this.orders.find(x => x.id === s.orderId), st = this.statusOf(o), idx = seq.indexOf(st);
+      headerAction = st === 'On hold' ? { label: 'Release hold', icon: 'ph-lock-open', fn: () => this.setState(x => ({ orderStatus: { ...x.orderStatus, [o.id]: 'Placed' } })) }
+        : idx < 3 ? { label: ['Start picking', 'Mark shipped', 'Mark delivered'][idx], icon: 'ph-arrow-right', fn: () => this.setState(x => ({ orderStatus: { ...x.orderStatus, [o.id]: seq[idx + 1] } })) } : null;
+    }
+    const prevScreen = (s.prev[s.prev.length - 1] || {}).screen;
+    const backNames = { overview: 'Overview', orders: 'Orders', customers: 'Accounts', order: 'Order', customer: 'Account', invoices: 'Invoices', reports: 'Reports', more: 'More' };
+
+    return {
+      L, isDesktop: !mob, isMobile: mob, vis, numOnly: !vis, is,
+      revArea: style === 'Visual', revBars: style === 'Hybrid', revTable: style === 'Tabular',
+      breakdownChart: style === 'Visual', breakdownTable: style !== 'Visual',
+      nav, tabs, moreItems, mainRef: this.mainRef,
+      title: hdr[0], subtitle: hdr[1], titleTag, headerAction,
+      showBack: s.prev.length > 0, backLabel: backNames[prevScreen] || 'Back', goBack: () => this.back(),
+      showSearch: ['orders', 'customers', 'products', 'inventory', 'invoices'].includes(scr), searchPh: 'Search ' + (backNames[scr] || scr).toLowerCase() + '…', query: s.query, onQuery: e => this.setState({ query: e.target.value }),
+      showRange: ['overview', 'reports'].includes(scr), ranges: ['30d', 'QTD', 'YTD'].map(r => ({ label: r, on: s.range === r, pick: () => this.setState({ range: r }) })),
+      kpis, chart, months, recentMonths: allMonths.slice(0, 6), allMonths, revTotal: this.k(revT),
+      aging, arTotal: this.k(arSum), overdueFmt: this.k(overdueSum), warehouses, lowStock, lowCount: lowList.length,
+      recentOrders: this.orders.slice(0, 5).map(o => this.orderRow(o)),
+      goOrders: () => this.nav('orders'), goInventory: () => this.nav('inventory'), goInvoices: () => this.nav('invoices'),
+      orderFilters, orders, ordersShown: orders.length + ' of ' + this.orders.length + ' orders', order,
+      customers: custRows, custStats, cust,
+      catFilters, productRows, productsShown: productRows.length + ' products',
+      invFilters, whHeads, invRows, invScope: s.wh === 'All' ? 'All warehouses' : 'Highlighting ' + s.wh + ' · click card again to clear',
+      inbound, hasInbound: inbound.length > 0, inboundSummary: inbound.length + ' open · ' + inbound.reduce((a, b) => a + b.qty, 0).toLocaleString() + ' units', rs, stop: this.stop,
+      invStatusFilters, invoices,
+      breakdowns, topAccounts,
+      termOpts: ['Net 15', 'Net 30', 'Net 45', 'Net 60'].map(t => ({ label: t, on: s.terms === t, pick: () => this.setState({ terms: t }) })),
+      creditToggles: [this.toggle('autohold', 'Auto-hold over limit', 'Hold new orders when balance exceeds credit'), this.toggle('approve', 'Approve new terms', 'Require finance sign-off on Net 60')],
+      notifToggles: [this.toggle('low', 'Low stock alerts', 'When a SKU drops below its reorder point'), this.toggle('autopo', 'Auto-draft purchase orders', 'Draft a PO at the reorder point for approval'), this.toggle('overdue', 'Overdue invoices', 'Daily list of accounts past due'), this.toggle('digest', 'Weekly digest', 'Monday summary to the sales team')],
+      team: [['Maya Rivera','maya@lumengoods.co','Admin','tag-accent'],['Jordan Lee','jordan@lumengoods.co','Sales rep','tag-neutral'],['Priya Shah','priya@lumengoods.co','Sales rep','tag-neutral'],['Dana Kim','dana@lumengoods.co','Finance','tag-neutral']].map(([name, email, role, tag]) => ({ name, email, role, tag, initials: name.split(' ').map(w => w[0]).join('') })),
+      showControls: this.props.showMockupControls ?? true,
+      styleOpts: ['Visual', 'Hybrid', 'Tabular'].map(o => ({ label: o, on: style === o, pick: () => this.setState({ style: o }) })),
+      deviceOpts: [['Desktop', 'ph-desktop'], ['Mobile', 'ph-device-mobile']].map(([o, icon]) => ({ label: o, icon, on: device === o, pick: () => this.setState({ device: o }) }))
+    };
+  }
+}
+</script>
+</body>
+</html>
