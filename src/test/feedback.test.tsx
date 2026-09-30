@@ -21,6 +21,15 @@ describe('settings save', () => {
     expect(await screen.findByRole('button', { name: 'Save' })).toBeDisabled();
   });
 
+  it('applies appearance at once without enabling Save', async () => {
+    const user = userEvent.setup();
+    renderApp('/settings');
+    await user.click(await screen.findByRole('button', { name: 'Coral' }));
+    expect(document.documentElement.dataset.accent).toBe('coral');
+    expect(screen.getByRole('button', { name: 'Save' })).toBeDisabled();
+    expect(screen.getByText('Applies instantly on this device. Save is not needed.')).toBeInTheDocument();
+  });
+
   it('shows progress, then confirms and persists the change', async () => {
     const user = userEvent.setup();
     renderApp('/settings', { latencyMs: SLOW_MS });

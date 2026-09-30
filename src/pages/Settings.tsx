@@ -30,6 +30,8 @@ function Appearance() {
   return (
     <div className="card elev-sm card--pad card--gap-md">
       <div className="card-title">Appearance</div>
+      {/* Theme lives in localStorage, not the settings API, so it never waits for Save. */}
+      <div className="muted-sm">Applies instantly on this device. Save is not needed.</div>
       <div className="field">
         <label>Theme</label>
         <Seg
