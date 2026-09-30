@@ -1,25 +1,29 @@
-# CODING AGENTS: READ THIS FIRST
+# Lumen Goods sales dashboard
 
-This is a **handoff bundle** from Claude Design (claude.ai/design).
+A React implementation of `docs/design/Sales Dashboard v3.dc.html`, the Claude Design prototype in this repository. It uses the Nocturne design system with a light theme by default.
 
-A user mocked up designs in HTML/CSS/JS using an AI design tool, then exported this bundle so a coding agent can implement the designs for real.
+## Run
 
-## What you should do — IMPORTANT
+```sh
+npm install   # npm 11 or later; npm 10 crashes on Vite 8's optional packages
+npm run dev
+npm test
+npm run build
+```
 
-**Read the chat transcripts first.** There are 2 chat transcript(s) in `chats/`. The transcripts show the full back-and-forth between the user and the design assistant — they tell you **what the user actually wants** and **where they landed** after iterating. Don't skip them. The final HTML files are the output, but the chat is where the intent lives.
+## Structure
 
-**Read `project/Sales Dashboard v3.dc.html` in full.** The user had this file open when they triggered the handoff, so it's almost certainly the primary design they want built. Read it top to bottom — don't skim. Then **follow its imports**: open every file it pulls in (shared components, CSS, scripts) so you understand how the pieces fit together before you start implementing.
+- `docs/design/`: the Claude Design prototypes (`Sales Dashboard v3.dc.html` is the one this app implements), the Nocturne and Modernist design system bundles, and the uploaded reference image.
+- `src/api/`: the mock API. `client.ts` holds one async function per future REST endpoint over an in-memory store seeded from `seed.ts`. `hooks.ts` wraps each function in a React Query hook. To use a real backend, replace the functions in `client.ts`.
+- `src/domain/`: pure business rules (stock status, restock suggestions, aging, credit, formatting). Vitest covers them.
+- `src/theme/`: light and dark themes, the six accent presets, and the custom accent picker. The picker keeps the chosen hue and uses Nocturne's lightness steps. The app saves the choice in `localStorage`.
+- `src/pages/`, `src/dialogs/`, `src/components/`, `src/layout/`: screens, the Restock, Edit pricing and New promotion dialogs, shared controls and charts, and the app shell.
+- `src/styles/`: `nocturne.css` is a copy of the design system. `themes.css` holds the accent ramps and light theme from the design. `app.css` holds all layout styles. The app uses no inline styles. Charts and bars draw their sizes as SVG attributes.
 
-**If anything is ambiguous, ask the user to confirm before you start implementing.** It's much cheaper to clarify scope up front than to build the wrong thing.
+## Differences from the prototype
 
-## About the design files
-
-The design medium is **HTML/CSS/JS** — these are prototypes, not production code. Your job is to **recreate them pixel-perfectly** in whatever technology makes sense for the target codebase (React, Vue, native, whatever fits). Match the visual output; don't copy the prototype's internal structure unless it happens to fit.
-
-**Don't render these files in a browser or take screenshots unless the user asks you to.** Everything you need — dimensions, colors, layout rules — is spelled out in the source. Read the HTML and CSS directly; a screenshot won't tell you anything they don't.
-
-## Bundle contents
-
-- `README.md` — this file
-- `chats/` — conversation transcripts (read these!)
-- `project/` — the `Sales dashboard UI mockups` project files (HTML prototypes, assets, components)
+- The "Mockup options" panel, the phone frame and the Tweaks props are gone. Below 768px the app switches to the mobile layout with the bottom tab bar and the "More" screen.
+- Order lines store the price at which each order was placed. The prototype read the live product price, which contradicted its own note that open orders keep their price.
+- Data lives in memory and resets on reload. Only the theme and accent survive a reload.
+- Buttons whose flows the design does not define do nothing: Export, New order, Add account, Add product, Transfer stock, Export aging, Save, Add warehouse and Invite. The app does not save the Company fields or the default credit limit on Settings.
+- The date range switch on Reports appears, as in the design, but changes nothing there. On Overview it changes the KPI cards.
