@@ -44,11 +44,17 @@ describe('navigation', () => {
 });
 
 describe('appearance', () => {
-  it('switches to dark mode from the header', async () => {
+  it('switches to dark mode from Settings', async () => {
     const user = userEvent.setup();
-    renderApp('/');
-    await user.click(await screen.findByRole('button', { name: 'Switch to dark mode' }));
+    renderApp('/settings');
+    await user.click(await screen.findByRole('radio', { name: 'Dark' }));
     expect(document.documentElement.dataset.theme).toBe('dark');
+  });
+
+  it('has no theme switcher in the page header', async () => {
+    renderApp('/');
+    await screen.findByRole('heading', { name: /Good morning/ });
+    expect(screen.queryByRole('button', { name: /Switch to (dark|light) mode/ })).not.toBeInTheDocument();
   });
 
   it('follows the device theme when System is picked and saved', async () => {
@@ -61,7 +67,6 @@ describe('appearance', () => {
     await user.click(screen.getByRole('button', { name: 'Save' }));
     await screen.findByText('Settings saved.');
     expect(localStorage.getItem('lumen.appearance')).toContain('"theme":"system"');
-    expect(screen.getByRole('button', { name: 'Switch to light mode' })).toBeInTheDocument();
   });
 
   it('applies a preset accent from Settings', async () => {

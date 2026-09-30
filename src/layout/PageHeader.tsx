@@ -1,10 +1,9 @@
 import type { ReactNode } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, MagnifyingGlass, Moon, Sun } from '@phosphor-icons/react';
+import { ArrowLeft, MagnifyingGlass } from '@phosphor-icons/react';
 import type { Range } from '../api/types';
 import { ActionButton } from '../components/ActionButton';
 import { Seg } from '../components/controls';
-import { useTheme } from '../theme/ThemeProvider';
 import { useNavState } from '../routes';
 
 export interface HeaderAction {
@@ -29,10 +28,8 @@ interface PageHeaderProps {
 const RANGES: Range[] = ['30d', 'QTD', 'YTD'];
 
 export function PageHeader({ title, subtitle, tag, search, range, action }: PageHeaderProps) {
-  const { resolvedTheme, toggleTheme } = useTheme();
   const navigate = useNavigate();
   const { back } = useNavState();
-  const isDark = resolvedTheme === 'dark';
 
   return (
     <header className="page-header">
@@ -56,9 +53,6 @@ export function PageHeader({ title, subtitle, tag, search, range, action }: Page
         </div>
       )}
       {range && <Seg label="Date range" value={range.value} onChange={range.onChange} options={RANGES.map((r) => ({ value: r, label: r }))} />}
-      <button type="button" className="btn btn-secondary btn-icon" onClick={toggleTheme} title={isDark ? 'Switch to light mode' : 'Switch to dark mode'} aria-label={isDark ? 'Switch to light mode' : 'Switch to dark mode'}>
-        {isDark ? <Sun className="icon-16" /> : <Moon className="icon-16" />}
-      </button>
       {action && (
         <ActionButton className="btn btn-primary" onClick={action.onClick} pending={action.pending ?? false} pendingLabel={action.pendingLabel ?? action.label} disabled={action.disabled}>
           {action.icon}

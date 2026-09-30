@@ -12,12 +12,9 @@ export interface Appearance {
 }
 
 interface ThemeContextValue extends Appearance {
-  /** The theme on screen. It differs from `theme` only when `theme` is 'system'. */
-  resolvedTheme: Theme;
   /** The stored appearance. The fields above also include an unsaved preview. */
   saved: Appearance;
   preview: Appearance | null;
-  toggleTheme: () => void;
   /** Shows an appearance without storing it. Pass null to return to the saved one. */
   setPreview: (appearance: Appearance | null) => void;
   /** Stores an appearance and ends any preview. */
@@ -100,23 +97,15 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   const value = useMemo<ThemeContextValue>(
     () => ({
       ...appearance,
-      resolvedTheme,
       saved,
       preview,
-      // The header toggle flips what is on screen, so it leaves 'system' for an explicit theme.
-      // It stores its choice at once, and it also updates a running preview so the click is visible.
-      toggleTheme: () => {
-        const theme: Theme = resolvedTheme === 'dark' ? 'light' : 'dark';
-        setSaved((a) => ({ ...a, theme }));
-        setPreview((p) => (p ? { ...p, theme } : p));
-      },
       setPreview,
       commit: (next) => {
         setSaved(next);
         setPreview(null);
       },
     }),
-    [appearance, resolvedTheme, saved, preview],
+    [appearance, saved, preview],
   );
 
   return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>;
