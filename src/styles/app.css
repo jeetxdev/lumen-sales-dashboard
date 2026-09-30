@@ -1446,6 +1446,38 @@ a.tabbar__item--on:hover {
   color: var(--color-accent-300);
 }
 
+/* — primary buttons: filled, so the main action on a screen stands out — */
+
+:root {
+  --btn-primary-bg: var(--color-accent);
+  --btn-primary-fg: var(--color-bg);
+}
+
+/* The light accents are too pale for white text, so the fill darkens until the label passes 4.5:1 contrast. */
+[data-theme="light"] {
+  --btn-primary-bg: color-mix(in srgb, var(--color-accent) 85%, black);
+  --btn-primary-fg: #ffffff;
+}
+
+.btn-primary {
+  color: var(--btn-primary-fg);
+  background: var(--btn-primary-bg);
+  border-color: var(--btn-primary-bg);
+}
+
+.btn-primary:hover {
+  background: color-mix(in srgb, var(--btn-primary-bg) 88%, var(--color-text));
+}
+
+.btn-primary:active {
+  background: color-mix(in srgb, var(--btn-primary-bg) 76%, var(--color-text));
+}
+
+.btn-primary:focus-visible {
+  outline: 2px solid var(--btn-primary-bg);
+  outline-offset: 2px;
+}
+
 /* — feedback: toasts and pending buttons — */
 
 .toasts {
