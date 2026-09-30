@@ -29,10 +29,10 @@ interface PageHeaderProps {
 const RANGES: Range[] = ['30d', 'QTD', 'YTD'];
 
 export function PageHeader({ title, subtitle, tag, search, range, action }: PageHeaderProps) {
-  const { theme, toggleTheme } = useTheme();
+  const { resolvedTheme, toggleTheme } = useTheme();
   const navigate = useNavigate();
   const { back } = useNavState();
-  const isDark = theme === 'dark';
+  const isDark = resolvedTheme === 'dark';
 
   return (
     <header className="page-header">

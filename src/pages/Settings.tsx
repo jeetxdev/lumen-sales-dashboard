@@ -1,5 +1,5 @@
 import { useEffect, useId, useState } from 'react';
-import { Check, Eyedropper, Moon, Plus, Sun, UserPlus } from '@phosphor-icons/react';
+import { Check, Desktop, Eyedropper, Moon, Plus, Sun, UserPlus } from '@phosphor-icons/react';
 import { useCustomers, useSettings, useTeam, useUpdateSettings, useWarehouses } from '../api/hooks';
 import { MAX_TIER_DISCOUNT_PCT } from '../api/client';
 import type { Company, PaymentTerms, Settings as SettingsData, SettingToggles, Tier } from '../api/types';
@@ -8,7 +8,7 @@ import { NOT_BUILT } from '../components/tags';
 import { num } from '../domain/format';
 import { PageHeader } from '../layout/PageHeader';
 import { useToasts } from '../feedback/Toaster';
-import { accentLabel, PRESET_ACCENTS, type Accent, type PresetAccent, type Theme } from '../theme/accent';
+import { accentLabel, PRESET_ACCENTS, type Accent, type PresetAccent, type ThemePreference } from '../theme/accent';
 import { sameAppearance, useTheme, type Appearance } from '../theme/ThemeProvider';
 
 const TERMS: PaymentTerms[] = ['Net 15', 'Net 30', 'Net 45', 'Net 60'];
@@ -27,7 +27,7 @@ const NOTIFICATION_TOGGLES: [keyof SettingToggles, string, string][] = [
 
 function AppearanceCard({ value, onChange }: { value: Appearance; onChange: (next: Appearance) => void }) {
   const { theme, accent, customHex } = value;
-  const setTheme = (next: Theme) => onChange({ ...value, theme: next });
+  const setTheme = (next: ThemePreference) => onChange({ ...value, theme: next });
   const setAccent = (next: Accent) => onChange({ ...value, accent: next });
   const setCustomHex = (hex: string) => onChange({ ...value, customHex: hex, accent: 'custom' });
   const note = accent === 'custom' ? `Custom ${customHex.toUpperCase()} · lightness tuned for contrast` : accentLabel(accent);
@@ -43,6 +43,7 @@ function AppearanceCard({ value, onChange }: { value: Appearance; onChange: (nex
           options={[
             { value: 'light', label: 'Light', icon: <Sun /> },
             { value: 'dark', label: 'Dark', icon: <Moon /> },
+            { value: 'system', label: 'System', icon: <Desktop /> },
           ]}
         />
       </div>
