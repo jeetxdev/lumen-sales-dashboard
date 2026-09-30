@@ -4,18 +4,24 @@ import { customAccentCss, DEFAULT_ACCENT, DEFAULT_CUSTOM_HEX, DEFAULT_THEME, PRE
 const STORAGE_KEY = 'lumen.appearance';
 const CUSTOM_STYLE_ID = 'custom-accent';
 
-interface Appearance {
+export interface Appearance {
   theme: Theme;
   accent: Accent;
   customHex: string;
 }
 
 interface ThemeContextValue extends Appearance {
-  setTheme: (theme: Theme) => void;
+  /** The stored appearance. The fields above also include an unsaved preview. */
+  saved: Appearance;
+  preview: Appearance | null;
   toggleTheme: () => void;
-  setAccent: (accent: Accent) => void;
-  setCustomHex: (hex: string) => void;
+  /** Shows an appearance without storing it. Pass null to return to the saved one. */
+  setPreview: (appearance: Appearance | null) => void;
+  /** Stores an appearance and ends any preview. */
+  commit: (appearance: Appearance) => void;
 }
+
+export const sameAppearance = (a: Appearance, b: Appearance) => a.theme === b.theme && a.accent === b.accent && a.customHex === b.customHex;
 
 const DEFAULTS: Appearance = { theme: DEFAULT_THEME, accent: DEFAULT_ACCENT, customHex: DEFAULT_CUSTOM_HEX };
 
@@ -52,14 +58,17 @@ function saveAppearance(value: Appearance) {
 const ThemeContext = createContext<ThemeContextValue | null>(null);
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
-  const [appearance, setAppearance] = useState<Appearance>(loadAppearance);
+  const [saved, setSaved] = useState<Appearance>(loadAppearance);
+  const [preview, setPreview] = useState<Appearance | null>(null);
+  const appearance = preview ?? saved;
+
+  useEffect(() => saveAppearance(saved), [saved]);
 
   useEffect(() => {
     const root = document.documentElement;
     root.dataset.theme = appearance.theme;
     root.dataset.accent = appearance.accent;
-    saveAppearance(appearance);
-  }, [appearance]);
+  }, [appearance.theme, appearance.accent]);
 
   useEffect(() => {
     let el = document.getElementById(CUSTOM_STYLE_ID);
@@ -74,12 +83,21 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   const value = useMemo<ThemeContextValue>(
     () => ({
       ...appearance,
-      setTheme: (theme) => setAppearance((a) => ({ ...a, theme })),
-      toggleTheme: () => setAppearance((a) => ({ ...a, theme: a.theme === 'dark' ? 'light' : 'dark' })),
-      setAccent: (accent) => setAppearance((a) => ({ ...a, accent })),
-      setCustomHex: (customHex) => setAppearance((a) => ({ ...a, customHex, accent: 'custom' })),
+      saved,
+      preview,
+      // The header toggle stores its choice at once, and it also updates a running preview so the click is visible.
+      toggleTheme: () => {
+        const theme: Theme = appearance.theme === 'dark' ? 'light' : 'dark';
+        setSaved((a) => ({ ...a, theme }));
+        setPreview((p) => (p ? { ...p, theme } : p));
+      },
+      setPreview,
+      commit: (next) => {
+        setSaved(next);
+        setPreview(null);
+      },
     }),
-    [appearance],
+    [appearance, saved, preview],
   );
 
   return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>;

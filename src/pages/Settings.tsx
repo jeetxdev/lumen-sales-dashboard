@@ -1,4 +1,4 @@
-import { useId, useState } from 'react';
+import { useEffect, useId, useState } from 'react';
 import { Check, Eyedropper, Moon, Plus, Sun, UserPlus } from '@phosphor-icons/react';
 import { useCustomers, useSettings, useTeam, useUpdateSettings, useWarehouses } from '../api/hooks';
 import { MAX_TIER_DISCOUNT_PCT } from '../api/client';
@@ -7,8 +7,9 @@ import { Seg, SwatchDot, SwitchRow } from '../components/controls';
 import { NOT_BUILT } from '../components/tags';
 import { num } from '../domain/format';
 import { PageHeader } from '../layout/PageHeader';
-import { accentLabel, PRESET_ACCENTS, type PresetAccent } from '../theme/accent';
-import { useTheme } from '../theme/ThemeProvider';
+import { useToasts } from '../feedback/Toaster';
+import { accentLabel, PRESET_ACCENTS, type Accent, type PresetAccent, type Theme } from '../theme/accent';
+import { sameAppearance, useTheme, type Appearance } from '../theme/ThemeProvider';
 
 const TERMS: PaymentTerms[] = ['Net 15', 'Net 30', 'Net 45', 'Net 60'];
 
@@ -24,14 +25,15 @@ const NOTIFICATION_TOGGLES: [keyof SettingToggles, string, string][] = [
   ['digest', 'Weekly digest', 'Monday summary to the sales team'],
 ];
 
-function Appearance() {
-  const { theme, setTheme, accent, setAccent, customHex, setCustomHex } = useTheme();
+function AppearanceCard({ value, onChange }: { value: Appearance; onChange: (next: Appearance) => void }) {
+  const { theme, accent, customHex } = value;
+  const setTheme = (next: Theme) => onChange({ ...value, theme: next });
+  const setAccent = (next: Accent) => onChange({ ...value, accent: next });
+  const setCustomHex = (hex: string) => onChange({ ...value, customHex: hex, accent: 'custom' });
   const note = accent === 'custom' ? `Custom ${customHex.toUpperCase()} · lightness tuned for contrast` : accentLabel(accent);
   return (
     <div className="card elev-sm card--pad card--gap-md">
       <div className="card-title">Appearance</div>
-      {/* Theme lives in localStorage, not the settings API, so it never waits for Save. */}
-      <div className="muted-sm">Applies instantly on this device. Save is not needed.</div>
       <div className="field">
         <label>Theme</label>
         <Seg
@@ -127,7 +129,23 @@ export function Settings() {
   const save = useUpdateSettings();
   // Edits stay local until Save, so the button is the one place a change is sent and confirmed.
   const [draft, setDraft] = useState(settings);
-  const dirty = !sameSettings(draft, settings);
+  const { saved: savedAppearance, preview, setPreview, commit } = useTheme();
+  const toasts = useToasts();
+  // Appearance previews live but is stored only on Save. Leaving the page drops the preview.
+  const appearance = preview ?? savedAppearance;
+  useEffect(() => () => setPreview(null), [setPreview]);
+
+  const settingsDirty = !sameSettings(draft, settings);
+  const dirty = settingsDirty || !sameAppearance(appearance, savedAppearance);
+
+  const onSave = () => {
+    if (settingsDirty) {
+      save.mutate(draft, { onSuccess: () => commit(appearance) });
+    } else {
+      commit(appearance);
+      toasts.push('success', 'Settings saved.');
+    }
+  };
 
   const setCompany = <K extends keyof Company>(key: K) => (value: Company[K]) => setDraft((d) => ({ ...d, company: { ...d.company, [key]: value } }));
   const flip = (key: keyof SettingToggles) => setDraft((d) => ({ ...d, toggles: { ...d.toggles, [key]: !d.toggles[key] } }));
@@ -141,9 +159,9 @@ export function Settings() {
 
   return (
     <>
-      <PageHeader title="Settings" subtitle={dirty ? 'Unsaved changes' : 'Lumen Goods Wholesale'} action={{ label: 'Save', icon: <Check />, onClick: () => save.mutate(draft), pending: save.isPending, pendingLabel: 'Saving…', disabled: !dirty }} />
+      <PageHeader title="Settings" subtitle={dirty ? 'Unsaved changes' : 'Lumen Goods Wholesale'} action={{ label: 'Save', icon: <Check />, onClick: onSave, pending: save.isPending, pendingLabel: 'Saving…', disabled: !dirty }} />
       <section className="grid-settings">
-        <Appearance />
+        <AppearanceCard value={appearance} onChange={setPreview} />
 
         <div className="card elev-sm card--pad card--gap-md">
           <div className="card-title">Company</div>

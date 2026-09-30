@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it } from 'vitest';
-import { cleanup, screen, within } from '@testing-library/react';
+import { cleanup, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { getSettings } from '../api/client';
 import { renderApp } from './renderApp';
@@ -21,13 +21,30 @@ describe('settings save', () => {
     expect(await screen.findByRole('button', { name: 'Save' })).toBeDisabled();
   });
 
-  it('applies appearance at once without enabling Save', async () => {
+  it('previews appearance and stores it only on Save', async () => {
     const user = userEvent.setup();
     renderApp('/settings');
     await user.click(await screen.findByRole('button', { name: 'Coral' }));
     expect(document.documentElement.dataset.accent).toBe('coral');
+    expect(localStorage.getItem('lumen.appearance')).not.toContain('coral');
+
+    await user.click(screen.getByRole('button', { name: 'Save' }));
+    expect(await within(successToasts()).findByText('Settings saved.')).toBeInTheDocument();
+    expect(localStorage.getItem('lumen.appearance')).toContain('coral');
     expect(screen.getByRole('button', { name: 'Save' })).toBeDisabled();
-    expect(screen.getByText('Applies instantly on this device. Save is not needed.')).toBeInTheDocument();
+  });
+
+  it('drops an unsaved appearance preview when the user leaves Settings', async () => {
+    const user = userEvent.setup();
+    renderApp('/settings');
+    const before = document.documentElement.dataset.accent;
+    await user.click(await screen.findByRole('button', { name: 'Coral' }));
+    expect(screen.getByRole('button', { name: 'Save' })).toBeEnabled();
+
+    await user.click(screen.getByRole('link', { name: /Overview/ }));
+    await screen.findByRole('heading', { name: /Good morning/ });
+    // The preview ends in the Settings page's unmount cleanup, which React runs after the new page paints.
+    await waitFor(() => expect(document.documentElement.dataset.accent).toBe(before));
   });
 
   it('shows progress, then confirms and persists the change', async () => {
