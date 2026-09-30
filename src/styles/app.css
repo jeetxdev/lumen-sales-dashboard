@@ -385,6 +385,12 @@ a.tabbar__item--on:hover {
 
 .grid-kpi {
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  transition: opacity 0.15s;
+}
+
+/* Previous range's figures stay visible, dimmed, while the new range loads. */
+.grid-kpi[aria-busy='true'] {
+  opacity: 0.6;
 }
 
 .grid-split {

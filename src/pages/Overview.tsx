@@ -26,7 +26,7 @@ export function Overview() {
   const mobile = useIsMobile();
   const [range, setRange] = useState<Range>('30d');
   const [revView, setRevView] = useState<ViewMode>('chart');
-  const summary = useRangeSummary(range);
+  const { summary, pending: rangePending } = useRangeSummary(range);
   const trends = useKpiTrends();
   const sales = useSalesSeries();
   const orders = useOrders();
@@ -59,7 +59,7 @@ export function Overview() {
         action={mobile ? null : { label: 'Export', icon: <Export />, onClick: NOT_BUILT }}
       />
 
-      <section className="grid-kpi">
+      <section className="grid-kpi" aria-busy={rangePending}>
         {kpis.map((k) => (
           <div key={k.label} className="card elev-sm card--pad kpi">
             <div className="kpi__label">

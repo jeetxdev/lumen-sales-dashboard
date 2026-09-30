@@ -1,3 +1,4 @@
+import { useDeferredValue } from 'react';
 import { QueryClient, useQueryClient, useSuspenseQuery } from '@tanstack/react-query';
 import { useFeedbackMutation } from '../feedback/useFeedbackMutation';
 import * as api from './client';
@@ -59,7 +60,16 @@ export const useTeam = () => useSuspenseQuery({ queryKey: keys.team, queryFn: ap
 export const useSalesSeries = () => useSuspenseQuery({ queryKey: keys.sales, queryFn: api.getSalesSeries }).data;
 export const useKpiTrends = () => useSuspenseQuery({ queryKey: keys.kpiTrends, queryFn: api.getKpiTrends }).data;
 export const useNextPoNumber = () => useSuspenseQuery({ queryKey: keys.nextPo, queryFn: api.getNextPoNumber }).data;
-export const useRangeSummary = (range: Range) => useSuspenseQuery({ queryKey: keys.range(range), queryFn: () => api.getRangeSummary(range) }).data;
+
+/**
+ * A range the cache has not seen yet would suspend and swap the whole page for the loading fallback.
+ * Deferring the range lets React keep the previous summary on screen until the new one arrives.
+ */
+export function useRangeSummary(range: Range) {
+  const shownRange = useDeferredValue(range);
+  const summary = useSuspenseQuery({ queryKey: keys.range(shownRange), queryFn: () => api.getRangeSummary(shownRange) }).data;
+  return { summary, pending: shownRange !== range };
+}
 
 function useInvalidate() {
   const client = useQueryClient();
