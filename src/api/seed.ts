@@ -22,8 +22,6 @@ import type {
 // Placeholder data for Lumen Goods. The mock server clones it on start, so edits never leak back here.
 
 export const CURRENT_USER = { name: 'Maya Rivera', role: 'Sales lead', initials: 'MR' };
-export const COMPANY = { legalName: 'Lumen Goods Wholesale LLC', taxId: '93-4418207', currency: 'USD', billingEmail: 'ar@lumengoods.co', defaultCreditLimit: 10000 };
-
 // The data describes one fixed business day.
 export const TODAY = new Date(2026, 8, 24);
 export const TODAY_SHORT = 'Sep 24';
@@ -240,6 +238,7 @@ export function seedIncoming(): Incoming[] {
 
 export function seedSettings(): Settings {
   return {
+    company: { legalName: 'Lumen Goods Wholesale LLC', taxId: '93-4418207', currency: 'USD', billingEmail: 'ar@lumengoods.co', defaultCreditLimit: 10000 },
     tierDiscounts: { Silver: 4, Gold: 8 },
     defaultTerms: 'Net 30',
     toggles: { autohold: true, approve: true, low: true, overdue: true, digest: false, autopo: false },

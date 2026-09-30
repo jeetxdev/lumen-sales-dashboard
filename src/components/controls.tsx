@@ -17,16 +17,17 @@ interface SegProps<T extends string> {
   compact?: boolean;
   scroll?: boolean;
   className?: string;
+  disabled?: boolean;
 }
 
 /** Nocturne segmented control on native radio inputs. */
-export function Seg<T extends string>({ options, value, onChange, label, compact = false, scroll = false, className = '' }: SegProps<T>) {
+export function Seg<T extends string>({ options, value, onChange, label, compact = false, scroll = false, className = '', disabled = false }: SegProps<T>) {
   const name = useId();
   return (
-    <div className={`seg ${scroll ? 'seg--scroll' : ''} ${className}`} role="radiogroup" aria-label={label}>
+    <div className={`seg ${scroll ? 'seg--scroll' : ''} ${className}`} role="radiogroup" aria-label={label} aria-disabled={disabled || undefined}>
       {options.map((o) => (
         <label key={o.value} className={`seg-opt ${compact ? 'seg-opt--compact' : ''}`} title={o.title}>
-          <input type="radio" name={name} checked={value === o.value} onChange={() => onChange(o.value)} aria-label={o.title} />
+          <input type="radio" name={name} checked={value === o.value} disabled={disabled} onChange={() => onChange(o.value)} aria-label={o.title} />
           {o.icon}
           {o.label}
           {o.meta !== undefined && <span className="seg-opt__meta">{o.meta}</span>}

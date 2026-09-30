@@ -1,23 +1,41 @@
-import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
-import { customAccentCss, DEFAULT_ACCENT, DEFAULT_CUSTOM_HEX, DEFAULT_THEME, PRESET_ACCENTS, type Accent, type Theme } from './accent';
+import { createContext, useContext, useEffect, useMemo, useState, useSyncExternalStore, type ReactNode } from 'react';
+import { customAccentCss, DEFAULT_ACCENT, DEFAULT_CUSTOM_HEX, DEFAULT_THEME, PRESET_ACCENTS, type Accent, type Theme, type ThemePreference } from './accent';
 
 const STORAGE_KEY = 'lumen.appearance';
 const CUSTOM_STYLE_ID = 'custom-accent';
+const DARK_QUERY = '(prefers-color-scheme: dark)';
 
-interface Appearance {
-  theme: Theme;
+export interface Appearance {
+  theme: ThemePreference;
   accent: Accent;
   customHex: string;
 }
 
 interface ThemeContextValue extends Appearance {
-  setTheme: (theme: Theme) => void;
-  toggleTheme: () => void;
-  setAccent: (accent: Accent) => void;
-  setCustomHex: (hex: string) => void;
+  /** The stored appearance. The fields above also include an unsaved preview. */
+  saved: Appearance;
+  preview: Appearance | null;
+  /** Shows an appearance without storing it. Pass null to return to the saved one. */
+  setPreview: (appearance: Appearance | null) => void;
+  /** Stores an appearance and ends any preview. */
+  commit: (appearance: Appearance) => void;
 }
 
+export const sameAppearance = (a: Appearance, b: Appearance) => a.theme === b.theme && a.accent === b.accent && a.customHex === b.customHex;
+
 const DEFAULTS: Appearance = { theme: DEFAULT_THEME, accent: DEFAULT_ACCENT, customHex: DEFAULT_CUSTOM_HEX };
+
+function isThemePreference(value: unknown): value is ThemePreference {
+  return value === 'light' || value === 'dark' || value === 'system';
+}
+
+function subscribeToSystemTheme(onChange: () => void) {
+  const query = window.matchMedia(DARK_QUERY);
+  query.addEventListener('change', onChange);
+  return () => query.removeEventListener('change', onChange);
+}
+
+const systemTheme = (): Theme => (window.matchMedia(DARK_QUERY).matches ? 'dark' : 'light');
 
 function isAccent(value: unknown): value is Accent {
   return value === 'custom' || (typeof value === 'string' && value in PRESET_ACCENTS);
@@ -32,7 +50,7 @@ function loadAppearance(): Appearance {
     if (typeof parsed !== 'object' || parsed === null) return DEFAULTS;
     const rec = parsed as Record<string, unknown>;
     return {
-      theme: rec.theme === 'dark' ? 'dark' : 'light',
+      theme: isThemePreference(rec.theme) ? rec.theme : DEFAULTS.theme,
       accent: isAccent(rec.accent) ? rec.accent : DEFAULTS.accent,
       customHex: typeof rec.customHex === 'string' && /^#[0-9a-f]{6}$/i.test(rec.customHex) ? rec.customHex : DEFAULTS.customHex,
     };
@@ -52,14 +70,19 @@ function saveAppearance(value: Appearance) {
 const ThemeContext = createContext<ThemeContextValue | null>(null);
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
-  const [appearance, setAppearance] = useState<Appearance>(loadAppearance);
+  const [saved, setSaved] = useState<Appearance>(loadAppearance);
+  const [preview, setPreview] = useState<Appearance | null>(null);
+  const appearance = preview ?? saved;
+  const deviceTheme = useSyncExternalStore(subscribeToSystemTheme, systemTheme);
+  const resolvedTheme: Theme = appearance.theme === 'system' ? deviceTheme : appearance.theme;
+
+  useEffect(() => saveAppearance(saved), [saved]);
 
   useEffect(() => {
     const root = document.documentElement;
-    root.dataset.theme = appearance.theme;
+    root.dataset.theme = resolvedTheme;
     root.dataset.accent = appearance.accent;
-    saveAppearance(appearance);
-  }, [appearance]);
+  }, [resolvedTheme, appearance.accent]);
 
   useEffect(() => {
     let el = document.getElementById(CUSTOM_STYLE_ID);
@@ -74,12 +97,15 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   const value = useMemo<ThemeContextValue>(
     () => ({
       ...appearance,
-      setTheme: (theme) => setAppearance((a) => ({ ...a, theme })),
-      toggleTheme: () => setAppearance((a) => ({ ...a, theme: a.theme === 'dark' ? 'light' : 'dark' })),
-      setAccent: (accent) => setAppearance((a) => ({ ...a, accent })),
-      setCustomHex: (customHex) => setAppearance((a) => ({ ...a, customHex, accent: 'custom' })),
+      saved,
+      preview,
+      setPreview,
+      commit: (next) => {
+        setSaved(next);
+        setPreview(null);
+      },
     }),
-    [appearance],
+    [appearance, saved, preview],
   );
 
   return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>;

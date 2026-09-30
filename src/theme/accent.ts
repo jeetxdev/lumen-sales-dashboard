@@ -1,4 +1,6 @@
 export type Theme = 'light' | 'dark';
+/** What the user picked. 'system' follows the device's light or dark setting. */
+export type ThemePreference = Theme | 'system';
 export type PresetAccent = 'teal' | 'azure' | 'emerald' | 'amber' | 'coral' | 'blurple';
 export type Accent = PresetAccent | 'custom';
 
@@ -11,7 +13,7 @@ export const PRESET_ACCENTS: Record<PresetAccent, string> = {
   blurple: '#9184d9',
 };
 
-export const DEFAULT_THEME: Theme = 'light';
+export const DEFAULT_THEME: ThemePreference = 'light';
 export const DEFAULT_ACCENT: Accent = 'teal';
 export const DEFAULT_CUSTOM_HEX = '#d4577f';
 

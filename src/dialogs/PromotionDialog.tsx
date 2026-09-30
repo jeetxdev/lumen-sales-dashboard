@@ -2,6 +2,7 @@ import { useId, useState } from 'react';
 import { useCategories, useCreatePromotion, useProducts, useSettings } from '../api/hooks';
 import type { Category, PromoAudience, PromoEnd } from '../api/types';
 import { Seg, Switch } from '../components/controls';
+import { ActionButton } from '../components/ActionButton';
 import { Dialog, Warning } from '../components/Dialog';
 import { money, plural } from '../domain/format';
 
@@ -63,9 +64,9 @@ export function PromotionDialog({ initialSku, onClose }: { initialSku?: string; 
           <button type="button" className="btn btn-secondary" onClick={onClose}>
             Cancel
           </button>
-          <button type="button" className="btn btn-primary" onClick={confirm} disabled={invalid || create.isPending}>
+          <ActionButton className="btn btn-primary" onClick={confirm} disabled={invalid} pending={create.isPending} pendingLabel="Creating…">
             Create promotion
-          </button>
+          </ActionButton>
         </>
       }
     >

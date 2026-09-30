@@ -1,4 +1,4 @@
-import { afterEach, describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import { cleanup, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { renderApp } from './renderApp';
@@ -6,6 +6,7 @@ import { renderApp } from './renderApp';
 afterEach(() => {
   cleanup();
   localStorage.clear();
+  vi.restoreAllMocks();
 });
 
 describe('inventory restock', () => {
@@ -43,11 +44,29 @@ describe('navigation', () => {
 });
 
 describe('appearance', () => {
-  it('switches to dark mode from the header', async () => {
+  it('switches to dark mode from Settings', async () => {
     const user = userEvent.setup();
-    renderApp('/');
-    await user.click(await screen.findByRole('button', { name: 'Switch to dark mode' }));
+    renderApp('/settings');
+    await user.click(await screen.findByRole('radio', { name: 'Dark' }));
     expect(document.documentElement.dataset.theme).toBe('dark');
+  });
+
+  it('has no theme switcher in the page header', async () => {
+    renderApp('/');
+    await screen.findByRole('heading', { name: /Good morning/ });
+    expect(screen.queryByRole('button', { name: /Switch to (dark|light) mode/ })).not.toBeInTheDocument();
+  });
+
+  it('follows the device theme when System is picked and saved', async () => {
+    const realMatchMedia = window.matchMedia;
+    vi.spyOn(window, 'matchMedia').mockImplementation((query: string) => ({ ...realMatchMedia(query), matches: query === '(prefers-color-scheme: dark)' }));
+    const user = userEvent.setup();
+    renderApp('/settings');
+    await user.click(await screen.findByRole('radio', { name: 'System' }));
+    expect(document.documentElement.dataset.theme).toBe('dark');
+    await user.click(screen.getByRole('button', { name: 'Save' }));
+    await screen.findByText('Settings saved.');
+    expect(localStorage.getItem('lumen.appearance')).toContain('"theme":"system"');
   });
 
   it('applies a preset accent from Settings', async () => {

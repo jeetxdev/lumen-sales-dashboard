@@ -124,6 +124,7 @@ export function AccountDetail() {
               label="Pricing tier"
               value={c.tier}
               onChange={(tier) => setTier.mutate({ id: c.id, tier })}
+              disabled={setTier.isPending}
               options={TIERS.map((t) => ({ value: t, label: t, meta: t === 'Standard' ? 'List' : `−${tierDiscountPct(t, settings)}%` }))}
             />
             <div className="muted-sm">

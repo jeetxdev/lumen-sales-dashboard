@@ -4,6 +4,7 @@ import { useCreateRestock, useNextPoNumber, useWarehouses } from '../api/hooks';
 import { TODAY } from '../api/seed';
 import type { Product } from '../api/types';
 import { Seg } from '../components/controls';
+import { ActionButton } from '../components/ActionButton';
 import { Dialog, Warning } from '../components/Dialog';
 import { money } from '../domain/format';
 import { defaultRestockWarehouses, etaLabel, restockTransitDays, suggestPurchase, suggestTransfer, totalStock } from '../domain/inventory';
@@ -64,9 +65,9 @@ export function RestockDialog({ product: p, onClose }: { product: Product; onClo
           <button type="button" className="btn btn-secondary" onClick={onClose}>
             Cancel
           </button>
-          <button type="button" className="btn btn-primary" onClick={confirm} disabled={invalid || create.isPending}>
+          <ActionButton className="btn btn-primary" onClick={confirm} disabled={invalid} pending={create.isPending} pendingLabel="Creating…">
             {isPO ? `Create ${nextPo}` : 'Create transfer'}
-          </button>
+          </ActionButton>
         </>
       }
     >

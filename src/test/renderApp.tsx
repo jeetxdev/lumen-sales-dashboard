@@ -4,18 +4,21 @@ import { MemoryRouter } from 'react-router-dom';
 import { resetMockDb } from '../api/client';
 import { createQueryClient } from '../api/hooks';
 import { App } from '../App';
+import { ToastProvider } from '../feedback/Toaster';
 import { ThemeProvider } from '../theme/ThemeProvider';
 
-export function renderApp(path = '/') {
-  resetMockDb({ latencyMs: 0 });
+export function renderApp(path = '/', { latencyMs = 0 }: { latencyMs?: number } = {}) {
+  resetMockDb({ latencyMs });
   const client = createQueryClient();
   return render(
     <QueryClientProvider client={client}>
-      <ThemeProvider>
-        <MemoryRouter initialEntries={[path]}>
-          <App />
-        </MemoryRouter>
-      </ThemeProvider>
+      <ToastProvider>
+        <ThemeProvider>
+          <MemoryRouter initialEntries={[path]}>
+            <App />
+          </MemoryRouter>
+        </ThemeProvider>
+      </ToastProvider>
     </QueryClientProvider>,
   );
 }

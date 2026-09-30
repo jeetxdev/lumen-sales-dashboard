@@ -32,9 +32,9 @@ export function OrderDetail() {
 
   let action: HeaderAction | null = null;
   if (o.status === 'On hold') {
-    action = { label: 'Release hold', icon: <LockOpen />, onClick: () => setStatus.mutate({ id: o.id, status: 'Placed' }) };
+    action = { label: 'Release hold', icon: <LockOpen />, onClick: () => setStatus.mutate({ id: o.id, status: 'Placed' }), pending: setStatus.isPending, pendingLabel: 'Updating…' };
   } else if (step < STEPS.length - 1) {
-    action = { label: NEXT_LABELS[step], icon: <ArrowRight />, onClick: () => setStatus.mutate({ id: o.id, status: STEPS[step + 1] }) };
+    action = { label: NEXT_LABELS[step], icon: <ArrowRight />, onClick: () => setStatus.mutate({ id: o.id, status: STEPS[step + 1] }), pending: setStatus.isPending, pendingLabel: 'Updating…' };
   }
 
   const facts = (rows: [string, string][]) =>

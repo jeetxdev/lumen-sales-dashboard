@@ -69,3 +69,23 @@ describe('returned data', () => {
     expect((await api.getProducts())[0].stock[0]).not.toBe(-1);
   });
 });
+
+describe('settings', () => {
+  it('saves the whole settings object', async () => {
+    const current = await api.getSettings();
+    await api.updateSettings({ ...current, company: { ...current.company, legalName: 'Lumen Goods Inc.' }, defaultTerms: 'Net 45' });
+    expect(await api.getSettings()).toMatchObject({ company: { legalName: 'Lumen Goods Inc.' }, defaultTerms: 'Net 45' });
+  });
+
+  it('rejects an invalid billing email without saving', async () => {
+    const current = await api.getSettings();
+    await expect(api.updateSettings({ ...current, company: { ...current.company, billingEmail: 'nope' } })).rejects.toThrow('Enter a valid billing email.');
+    expect((await api.getSettings()).company.billingEmail).toBe(current.company.billingEmail);
+  });
+
+  it('rejects a tier discount above the maximum', async () => {
+    const current = await api.getSettings();
+    const tooHigh = api.MAX_TIER_DISCOUNT_PCT + 1;
+    await expect(api.updateSettings({ ...current, tierDiscounts: { ...current.tierDiscounts, Gold: tooHigh } })).rejects.toThrow(/Tier discounts/);
+  });
+});

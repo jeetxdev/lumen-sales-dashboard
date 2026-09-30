@@ -1,4 +1,5 @@
-import { QueryClient, useMutation, useQueryClient, useSuspenseQuery } from '@tanstack/react-query';
+import { QueryClient, useQueryClient, useSuspenseQuery } from '@tanstack/react-query';
+import { useFeedbackMutation } from '../feedback/useFeedbackMutation';
 import * as api from './client';
 import type { OrderStatus, PriceUpdateInput, PromotionInput, Range, RestockInput, Settings, Tier } from './types';
 
@@ -67,78 +68,84 @@ function useInvalidate() {
 
 export function useSetOrderStatus() {
   const invalidate = useInvalidate();
-  return useMutation({
+  return useFeedbackMutation({
     mutationFn: ({ id, status }: { id: number; status: OrderStatus }) => api.setOrderStatus(id, status),
     onSuccess: () => invalidate(keys.orders),
+    success: (o) => `Order #${o.id} is now ${o.status}.`,
   });
 }
 
 export function useSendReminder() {
   const invalidate = useInvalidate();
-  return useMutation({ mutationFn: api.sendInvoiceReminder, onSuccess: () => invalidate(keys.invoices) });
+  return useFeedbackMutation({
+    mutationFn: (id: string) => api.sendInvoiceReminder(id),
+    onSuccess: () => invalidate(keys.invoices),
+    success: (i) => `Reminder sent for ${i.id}.`,
+  });
 }
 
 export function useSetCustomerTier() {
   const invalidate = useInvalidate();
-  return useMutation({
+  return useFeedbackMutation({
     mutationFn: ({ id, tier }: { id: number; tier: Tier }) => api.setCustomerTier(id, tier),
     onSuccess: () => invalidate(keys.customers),
+    success: (c) => `${c.name} moved to ${c.tier}.`,
   });
 }
 
 export function useUpdatePrices() {
   const invalidate = useInvalidate();
-  return useMutation({ mutationFn: (input: PriceUpdateInput) => api.updateProductPrices(input), onSuccess: () => invalidate(keys.products) });
+  return useFeedbackMutation({
+    mutationFn: (input: PriceUpdateInput) => api.updateProductPrices(input),
+    onSuccess: () => invalidate(keys.products),
+    success: (p) => (p.scheduled ? `New prices for ${p.name} scheduled for ${p.scheduled.when}.` : `Prices for ${p.name} saved.`),
+    inlineError: true,
+  });
 }
 
 export function useCreateRestock() {
   const invalidate = useInvalidate();
-  return useMutation({
+  return useFeedbackMutation({
     mutationFn: (input: RestockInput) => api.createRestock(input),
     onSuccess: () => invalidate(keys.incoming, keys.products, keys.nextPo),
+    success: (i) => `${i.ref} created. Expected ${i.eta}.`,
+    inlineError: true,
   });
 }
 
 export function useReceiveIncoming() {
   const invalidate = useInvalidate();
-  return useMutation({ mutationFn: api.receiveIncoming, onSuccess: () => invalidate(keys.incoming, keys.products) });
+  return useFeedbackMutation({
+    mutationFn: (sku: string) => api.receiveIncoming(sku),
+    onSuccess: () => invalidate(keys.incoming, keys.products),
+    success: (p) => `Received stock for ${p.name}.`,
+  });
 }
 
 export function useCreatePromotion() {
   const invalidate = useInvalidate();
-  return useMutation({ mutationFn: (input: PromotionInput) => api.createPromotion(input), onSuccess: () => invalidate(keys.promotions) });
+  return useFeedbackMutation({
+    mutationFn: (input: PromotionInput) => api.createPromotion(input),
+    onSuccess: () => invalidate(keys.promotions),
+    success: (p) => `Promotion "${p.name}" created.`,
+    inlineError: true,
+  });
 }
 
 export function useSetPromotionActive() {
   const invalidate = useInvalidate();
-  return useMutation({
+  return useFeedbackMutation({
     mutationFn: ({ id, active }: { id: string; active: boolean }) => api.setPromotionActive(id, active),
     onSuccess: () => invalidate(keys.promotions),
+    success: (p) => (p.active ? `"${p.name}" is active again.` : `"${p.name}" ended.`),
   });
 }
 
 export function useUpdateSettings() {
-  const client = useQueryClient();
   const invalidate = useInvalidate();
-  return useMutation({
-    mutationFn: (patch: Partial<Settings>) => api.updateSettings(patch),
-    // Switches and number fields must respond at once, so the cache updates before the request returns.
-    onMutate: async (patch) => {
-      await client.cancelQueries({ queryKey: keys.settings });
-      const previous = client.getQueryData<Settings>(keys.settings);
-      if (previous) {
-        client.setQueryData<Settings>(keys.settings, {
-          ...previous,
-          ...patch,
-          tierDiscounts: { ...previous.tierDiscounts, ...patch.tierDiscounts },
-          toggles: { ...previous.toggles, ...patch.toggles },
-        });
-      }
-      return { previous };
-    },
-    onError: (_err, _patch, context) => {
-      if (context?.previous) client.setQueryData(keys.settings, context.previous);
-    },
-    onSettled: () => invalidate(keys.settings),
+  return useFeedbackMutation({
+    mutationFn: (settings: Settings) => api.updateSettings(settings),
+    onSuccess: () => invalidate(keys.settings),
+    success: () => 'Settings saved.',
   });
 }
