@@ -143,7 +143,16 @@ export interface SettingToggles {
   autopo: boolean;
 }
 
+export interface Company {
+  legalName: string;
+  taxId: string;
+  currency: string;
+  billingEmail: string;
+  defaultCreditLimit: number;
+}
+
 export interface Settings {
+  company: Company;
   tierDiscounts: { Silver: number; Gold: number };
   defaultTerms: PaymentTerms;
   toggles: SettingToggles;

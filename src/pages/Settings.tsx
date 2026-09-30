@@ -1,17 +1,16 @@
 import { useId, useState } from 'react';
 import { Check, Eyedropper, Moon, Plus, Sun, UserPlus } from '@phosphor-icons/react';
 import { useCustomers, useSettings, useTeam, useUpdateSettings, useWarehouses } from '../api/hooks';
-import { COMPANY } from '../api/seed';
-import type { PaymentTerms, SettingToggles, Tier } from '../api/types';
+import { MAX_TIER_DISCOUNT_PCT } from '../api/client';
+import type { Company, PaymentTerms, Settings as SettingsData, SettingToggles, Tier } from '../api/types';
 import { Seg, SwatchDot, SwitchRow } from '../components/controls';
 import { NOT_BUILT } from '../components/tags';
-import { money, num } from '../domain/format';
+import { num } from '../domain/format';
 import { PageHeader } from '../layout/PageHeader';
 import { accentLabel, PRESET_ACCENTS, type PresetAccent } from '../theme/accent';
 import { useTheme } from '../theme/ThemeProvider';
 
 const TERMS: PaymentTerms[] = ['Net 15', 'Net 30', 'Net 45', 'Net 60'];
-const MAX_TIER_DISCOUNT = 50;
 
 const CREDIT_TOGGLES: [keyof SettingToggles, string, string][] = [
   ['autohold', 'Auto-hold over limit', 'Hold new orders when balance exceeds credit'],
@@ -79,13 +78,13 @@ function TierInput({ tier, value, onCommit }: { tier: Tier; value: number; onCom
         className="input input--post"
         type="number"
         min="0"
-        max={MAX_TIER_DISCOUNT}
+        max={MAX_TIER_DISCOUNT_PCT}
         value={fixed ? '0' : draft}
         disabled={fixed}
         aria-label={`${tier} discount percent`}
         onChange={(e) => {
           setDraft(e.target.value);
-          onCommit(Math.max(0, Math.min(MAX_TIER_DISCOUNT, parseFloat(e.target.value) || 0)));
+          onCommit(Math.max(0, Math.min(MAX_TIER_DISCOUNT_PCT, parseFloat(e.target.value) || 0)));
         }}
       />
       <span className="affix__post">%</span>
@@ -93,25 +92,44 @@ function TierInput({ tier, value, onCommit }: { tier: Tier; value: number; onCom
   );
 }
 
-function TextField({ label, defaultValue }: { label: string; defaultValue: string }) {
+function TextField({ label, value, onChange, type = 'text' }: { label: string; value: string; onChange: (v: string) => void; type?: 'text' | 'email' }) {
   const id = useId();
   return (
     <div className="field">
       <label htmlFor={id}>{label}</label>
-      <input id={id} className="input" defaultValue={defaultValue} />
+      <input id={id} className="input" type={type} value={value} onChange={(e) => onChange(e.target.value)} />
     </div>
   );
 }
+
+function MoneyField({ label, value, onChange }: { label: string; value: number; onChange: (v: number) => void }) {
+  const id = useId();
+  return (
+    <div className="field">
+      <label htmlFor={id}>{label}</label>
+      <div className="affix">
+        <span className="affix__pre">$</span>
+        <input id={id} className="input input--pre" type="number" min="0" step="1000" value={value} onChange={(e) => onChange(parseFloat(e.target.value) || 0)} />
+      </div>
+    </div>
+  );
+}
+
+const sameSettings = (a: SettingsData, b: SettingsData) => JSON.stringify(a) === JSON.stringify(b);
 
 export function Settings() {
   const settings = useSettings();
   const customers = useCustomers();
   const warehouses = useWarehouses();
   const team = useTeam();
-  const update = useUpdateSettings();
+  const save = useUpdateSettings();
+  // Edits stay local until Save, so the button is the one place a change is sent and confirmed.
+  const [draft, setDraft] = useState(settings);
+  const dirty = !sameSettings(draft, settings);
 
-  const flip = (key: keyof SettingToggles) => update.mutate({ toggles: { ...settings.toggles, [key]: !settings.toggles[key] } });
-  const toggleRows = (rows: [keyof SettingToggles, string, string][]) => rows.map(([key, label, sub]) => <SwitchRow key={key} label={label} sub={sub} on={settings.toggles[key]} onToggle={() => flip(key)} />);
+  const setCompany = <K extends keyof Company>(key: K) => (value: Company[K]) => setDraft((d) => ({ ...d, company: { ...d.company, [key]: value } }));
+  const flip = (key: keyof SettingToggles) => setDraft((d) => ({ ...d, toggles: { ...d.toggles, [key]: !d.toggles[key] } }));
+  const toggleRows = (rows: [keyof SettingToggles, string, string][]) => rows.map(([key, label, sub]) => <SwitchRow key={key} label={label} sub={sub} on={draft.toggles[key]} onToggle={() => flip(key)} />);
 
   const tiers: [Tier, string][] = [
     ['Standard', 'tag-neutral'],
@@ -121,27 +139,27 @@ export function Settings() {
 
   return (
     <>
-      <PageHeader title="Settings" subtitle="Lumen Goods Wholesale" action={{ label: 'Save', icon: <Check />, onClick: NOT_BUILT }} />
+      <PageHeader title="Settings" subtitle={dirty ? 'Unsaved changes' : 'Lumen Goods Wholesale'} action={{ label: 'Save', icon: <Check />, onClick: () => save.mutate(draft), pending: save.isPending, pendingLabel: 'Saving…', disabled: !dirty }} />
       <section className="grid-settings">
         <Appearance />
 
         <div className="card elev-sm card--pad card--gap-md">
           <div className="card-title">Company</div>
-          <TextField label="Legal name" defaultValue={COMPANY.legalName} />
+          <TextField label="Legal name" value={draft.company.legalName} onChange={setCompany('legalName')} />
           <div className="grid-2">
-            <TextField label="Tax ID" defaultValue={COMPANY.taxId} />
-            <TextField label="Currency" defaultValue={COMPANY.currency} />
+            <TextField label="Tax ID" value={draft.company.taxId} onChange={setCompany('taxId')} />
+            <TextField label="Currency" value={draft.company.currency} onChange={setCompany('currency')} />
           </div>
-          <TextField label="Billing email" defaultValue={COMPANY.billingEmail} />
+          <TextField label="Billing email" type="email" value={draft.company.billingEmail} onChange={setCompany('billingEmail')} />
         </div>
 
         <div className="card elev-sm card--pad card--gap-md">
           <div className="card-title">Credit &amp; terms</div>
           <div className="field">
             <label>Default payment terms</label>
-            <Seg label="Default payment terms" value={settings.defaultTerms} onChange={(defaultTerms) => update.mutate({ defaultTerms })} options={TERMS.map((t) => ({ value: t, label: t }))} />
+            <Seg label="Default payment terms" value={draft.defaultTerms} onChange={(defaultTerms) => setDraft((d) => ({ ...d, defaultTerms }))} options={TERMS.map((t) => ({ value: t, label: t }))} />
           </div>
-          <TextField label="Default credit limit, new accounts" defaultValue={money(COMPANY.defaultCreditLimit)} />
+          <MoneyField label="Default credit limit, new accounts" value={draft.company.defaultCreditLimit} onChange={setCompany('defaultCreditLimit')} />
           {toggleRows(CREDIT_TOGGLES)}
         </div>
 
@@ -156,7 +174,7 @@ export function Settings() {
                 <span className="grow muted-xs-12">
                   {count} accounts{tier === 'Standard' ? ' · list price' : ''}
                 </span>
-                <TierInput tier={tier} value={tier === 'Standard' ? 0 : settings.tierDiscounts[tier]} onCommit={(v) => tier !== 'Standard' && update.mutate({ tierDiscounts: { ...settings.tierDiscounts, [tier]: v } })} />
+                <TierInput tier={tier} value={tier === 'Standard' ? 0 : draft.tierDiscounts[tier]} onCommit={(v) => tier !== 'Standard' && setDraft((d) => ({ ...d, tierDiscounts: { ...d.tierDiscounts, [tier]: v } }))} />
               </div>
             );
           })}

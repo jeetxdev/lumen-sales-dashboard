@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Export } from '@phosphor-icons/react';
 import { useCustomers, useInvoices, useSendReminder } from '../api/hooks';
+import { ActionButton } from '../components/ActionButton';
 import { INVOICE_TAG, NOT_BUILT } from '../components/tags';
 import { Seg } from '../components/controls';
 import { invoiceStatus, type InvoiceStatus } from '../domain/finance';
@@ -90,9 +91,9 @@ export function Invoices() {
                     <td className="r num">{money(i.amount)}</td>
                     <td className="r">
                       {st !== 'Paid' && (
-                        <button type="button" className={`btn ${btnClass} btn--row`} onClick={() => remind.mutate(i.id)} disabled={i.reminded}>
+                        <ActionButton className={`btn ${btnClass} btn--row`} onClick={() => remind.mutate(i.id)} disabled={i.reminded} pending={remind.isPending && remind.variables === i.id} pendingLabel="Sending…">
                           {i.reminded ? 'Reminder sent' : 'Send reminder'}
-                        </button>
+                        </ActionButton>
                       )}
                     </td>
                   </tr>

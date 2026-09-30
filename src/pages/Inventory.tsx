@@ -2,6 +2,7 @@ import { useState, type MouseEvent } from 'react';
 import { ArrowsLeftRight, Package } from '@phosphor-icons/react';
 import { useIncoming, useProducts, useReceiveIncoming, useWarehouses } from '../api/hooks';
 import type { Product, WarehouseCode } from '../api/types';
+import { ActionButton } from '../components/ActionButton';
 import { Meter, type BarTone } from '../components/charts';
 import { ClickCard, ClickRow } from '../components/ClickRow';
 import { Seg } from '../components/controls';
@@ -133,10 +134,10 @@ export function Inventory() {
                 +{b.qty} → {b.warehouse}
               </span>
               <span className="inbound__eta">ETA {b.eta}</span>
-              <button type="button" className="btn btn-ghost btn--xs" onClick={() => receive.mutate(b.sku)} disabled={receive.isPending}>
+              <ActionButton className="btn btn-ghost btn--xs" onClick={() => receive.mutate(b.sku)} pending={receive.isPending && receive.variables === b.sku} pendingLabel="Receiving…">
                 <Package />
                 Receive
-              </button>
+              </ActionButton>
             </div>
           ))}
         </section>

@@ -2,6 +2,7 @@ import type { ReactNode } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, MagnifyingGlass, Moon, Sun } from '@phosphor-icons/react';
 import type { Range } from '../api/types';
+import { ActionButton } from '../components/ActionButton';
 import { Seg } from '../components/controls';
 import { useTheme } from '../theme/ThemeProvider';
 import { useNavState } from '../routes';
@@ -10,6 +11,10 @@ export interface HeaderAction {
   label: string;
   icon: ReactNode;
   onClick: () => void;
+  /** Set while the action's request runs, so the button locks and names what is happening. */
+  pending?: boolean;
+  pendingLabel?: string;
+  disabled?: boolean;
 }
 
 interface PageHeaderProps {
@@ -55,10 +60,10 @@ export function PageHeader({ title, subtitle, tag, search, range, action }: Page
         {isDark ? <Sun className="icon-16" /> : <Moon className="icon-16" />}
       </button>
       {action && (
-        <button type="button" className="btn btn-primary" onClick={action.onClick}>
+        <ActionButton className="btn btn-primary" onClick={action.onClick} pending={action.pending ?? false} pendingLabel={action.pendingLabel ?? action.label} disabled={action.disabled}>
           {action.icon}
           {action.label}
-        </button>
+        </ActionButton>
       )}
     </header>
   );

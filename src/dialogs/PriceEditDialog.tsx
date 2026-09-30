@@ -2,6 +2,7 @@ import { useId, useState } from 'react';
 import { useSettings, useUpdatePrices } from '../api/hooks';
 import type { PriceChangeWhen, Product } from '../api/types';
 import { Seg } from '../components/controls';
+import { ActionButton } from '../components/ActionButton';
 import { Dialog, Warning } from '../components/Dialog';
 import { marginPct } from '../domain/finance';
 import { money } from '../domain/format';
@@ -61,9 +62,9 @@ export function PriceEditDialog({ product: p, onClose }: { product: Product; onC
           <button type="button" className="btn btn-secondary" onClick={onClose}>
             Cancel
           </button>
-          <button type="button" className="btn btn-primary" onClick={confirm} disabled={invalid || update.isPending}>
+          <ActionButton className="btn btn-primary" onClick={confirm} disabled={invalid} pending={update.isPending} pendingLabel="Saving…">
             {draft.when === 'Immediately' ? 'Save prices' : `Schedule for ${draft.when}`}
-          </button>
+          </ActionButton>
         </>
       }
     >

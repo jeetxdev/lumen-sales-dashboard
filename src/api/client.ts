@@ -47,6 +47,9 @@ import { etaLabel, restockTransitDays } from '../domain/inventory';
 export const MOCK_LATENCY_MS = 120;
 const ID_PAD = 2;
 const TRANSFER_ID_PAD = 4;
+export const MAX_TIER_DISCOUNT_PCT = 50;
+// A loose check. The real backend would confirm the address by sending mail to it.
+const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 interface Db {
   products: Product[];
@@ -217,12 +220,12 @@ export function setPromotionActive(id: string, active: boolean): Promise<Promoti
   return respond(promo);
 }
 
-export function updateSettings(patch: Partial<Settings>): Promise<Settings> {
-  db.settings = {
-    ...db.settings,
-    ...patch,
-    tierDiscounts: { ...db.settings.tierDiscounts, ...patch.tierDiscounts },
-    toggles: { ...db.settings.toggles, ...patch.toggles },
-  };
+export function updateSettings(next: Settings): Promise<Settings> {
+  if (!next.company.legalName.trim()) return fail('Enter a legal name.');
+  if (!EMAIL_PATTERN.test(next.company.billingEmail)) return fail('Enter a valid billing email.');
+  if (next.company.defaultCreditLimit < 0) return fail('Credit limit cannot be negative.');
+  const discounts = Object.values(next.tierDiscounts);
+  if (discounts.some((d) => d < 0 || d > MAX_TIER_DISCOUNT_PCT)) return fail(`Tier discounts must be between 0% and ${MAX_TIER_DISCOUNT_PCT}%.`);
+  db.settings = structuredClone(next);
   return respond(db.settings);
 }

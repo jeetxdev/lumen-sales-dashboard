@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Plus } from '@phosphor-icons/react';
 import { usePromotions, useSetPromotionActive } from '../api/hooks';
+import { ActionButton } from '../components/ActionButton';
 import { PromotionDialog } from '../dialogs/PromotionDialog';
 import { PageHeader } from '../layout/PageHeader';
 
@@ -55,9 +56,14 @@ export function Promotions() {
                     <span className={`tag ${pr.active ? 'tag-accent' : 'tag-neutral'}`}>{pr.active ? 'Active' : 'Ended'}</span>
                   </td>
                   <td className="r">
-                    <button type="button" className="btn btn-secondary btn--row" onClick={() => setActive.mutate({ id: pr.id, active: !pr.active })}>
+                    <ActionButton
+                      className="btn btn-secondary btn--row"
+                      onClick={() => setActive.mutate({ id: pr.id, active: !pr.active })}
+                      pending={setActive.isPending && setActive.variables?.id === pr.id}
+                      pendingLabel={pr.active ? 'Ending…' : 'Reactivating…'}
+                    >
                       {pr.active ? 'End now' : 'Reactivate'}
-                    </button>
+                    </ActionButton>
                   </td>
                 </tr>
               ))}
